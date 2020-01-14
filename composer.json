@@ -24,15 +24,6 @@
         "phpunit/phpunit" : "^8.0",
         "infection/infection": "^0.14|^0.15"
     },
-    "repositories": [
-        {
-            "type": "path",
-            "url": "../JsonApi-Constant",
-            "options": {
-                "symlink": true
-            }
-        }
-    ],
     "minimum-stability": "dev",
     "prefer-stable": true,
     "autoload": {
