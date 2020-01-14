@@ -1,0 +1,71 @@
+{
+    "name": "vgirol/jsonapi-structure",
+    "type": "library",
+    "description": "Tools to check content of a JSON:API request",
+    "keywords": [
+        "VGirol",
+        "JsonApi-Structure"
+    ],
+    "homepage": "https://github.com/VGirol/JsonApi-Structure",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vincent Girol",
+            "email": "vincent@girol.fr",
+            "homepage": "https://github.com/VGirol",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php" : "~7.1",
+        "vgirol/jsonapi-constant": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit" : "^8.0",
+        "infection/infection": "^0.14|^0.15"
+    },
+    "repositories": [
+        {
+            "type": "path",
+            "url": "../JsonApi-Constant",
+            "options": {
+                "symlink": true
+            }
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "autoload": {
+        "psr-4": {
+            "VGirol\\JsonApiStructure\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "VGirol\\JsonApiStructure\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "setup": "bash install/setup.sh",
+        "post-update-cmd": [
+            "@setup"
+        ],
+        "test": "./vendor/bin/phpunit tests ",
+        "infection": "./vendor/bin/infection --coverage=build/coverage --threads=$(nproc) --configuration=infection.json --min-msi=70 --min-covered-msi=70",
+        "travis": [
+            "@test",
+            "@infection"
+        ],
+        "build": [
+            "@travis"
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-master": "1.0-dev"
+        }
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
