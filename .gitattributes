@@ -15,4 +15,5 @@
 /tests                       export-ignore
 /docs                        export-ignore
 
-composer.json merge=ours
+/.gitignore merge=ours
+/composer.json merge=ours
