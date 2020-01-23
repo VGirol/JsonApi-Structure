@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure\Testing;
 
-use PHPUnit\Framework\ExpectationFailedException;
+use VGirol\JsonApiStructure\Exception\InvalidArgumentException;
+use VGirol\JsonApiStructure\Exception\InvalidArgumentHelper;
+use VGirol\JsonApiStructure\Exception\ValidationException;
 
 /**
  * Some helpers for testing
@@ -54,11 +56,11 @@ trait SetExceptionsTrait
      *
      * @return void
      */
-    protected function setFailure(string $className, ?string $message = null, $code = null)
+    protected function setFailure(?string $message = null, $code = null, $className = ValidationException::class): void
     {
-        $fn = (($message !== null) && (strpos($message, '/') === 0))
+        $method = (($message !== null) && (strpos($message, '/') === 0))
             ? 'setFailureExceptionRegex' : 'setFailureException';
-        $this->{$fn}($className, $message, $code);
+        $this->{$method}($className, $message, $code);
     }
 
     /**
@@ -68,7 +70,7 @@ trait SetExceptionsTrait
      *
      * @return void
      */
-    protected function setFailureException(string $className, ?string $message = null, $code = null)
+    protected function setFailureException(string $className, ?string $message = null, $code = null): void
     {
         $this->expectException($className);
         if ($message !== null) {
@@ -86,7 +88,7 @@ trait SetExceptionsTrait
      *
      * @return void
      */
-    protected function setFailureExceptionRegex(string $className, ?string $message = null, $code = null)
+    protected function setFailureExceptionRegex(string $className, ?string $message = null, $code = null): void
     {
         $this->expectException($className);
         if ($message !== null) {
@@ -95,6 +97,21 @@ trait SetExceptionsTrait
         if ($code !== null) {
             $this->expectExceptionCode($code);
         }
+    }
+
+    /**
+     * Set the expected exception and message when testing a call with invalid arguments to a method.
+     *
+     * @param integer $arg
+     * @param string  $type
+     * @param mixed   $value
+     *
+     * @return void
+     */
+    protected function setInvalidArgumentException(int $arg, string $type, $value = null): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessageRegExp(InvalidArgumentHelper::messageRegex($arg, $type, $value));
     }
 
     /**

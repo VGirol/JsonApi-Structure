@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -33,9 +30,9 @@ class ValidateJsonapiObjectTest extends TestCase
      * @test
      * @dataProvider notValidJsonapiObjectProvider
      */
-    public function jsonapiObjectIsNotValid($json, $strict, $failureMessage)
+    public function jsonapiObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService)->validateJsonapiObject($json, $strict);
     }
 
@@ -52,7 +49,8 @@ class ValidateJsonapiObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::OBJECT_NOT_ARRAY
+                Messages::OBJECT_NOT_ARRAY,
+                403
             ],
             'not allowed member' => [
                 [
@@ -60,14 +58,16 @@ class ValidateJsonapiObjectTest extends TestCase
                     'not' => 'allowed'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'version is not a string' => [
                 [
                     Members::JSONAPI_VERSION => 123
                 ],
                 false,
-                Messages::JSONAPI_VERSION_IS_NOT_STRING
+                Messages::JSONAPI_VERSION_IS_NOT_STRING,
+                403
             ],
             'meta not valid' => [
                 [
@@ -77,7 +77,8 @@ class ValidateJsonapiObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'meta with not safe member' => [
                 [
@@ -87,7 +88,8 @@ class ValidateJsonapiObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }

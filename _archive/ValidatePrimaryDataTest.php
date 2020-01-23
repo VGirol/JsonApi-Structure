@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -89,9 +86,9 @@ class ValidatePrimaryDataTest extends TestCase
      * @test
      * @dataProvider notValidPrimaryDataProvider
      */
-    public function primaryDataIsNotValid($json, $strict, $failureMessage)
+    public function primaryDataIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validatePrimaryData($json, $strict);
     }
 
@@ -101,7 +98,8 @@ class ValidatePrimaryDataTest extends TestCase
             'not an array' => [
                 'bad',
                 false,
-                Messages::PRIMARY_DATA_NOT_ARRAY
+                sprintf(Messages::REQUEST_ERROR_DATA_MEMBER_NOT_ARRAY, gettype('bad')),
+                403
             ],
             'collection with different type of resource objects' => [
                 [
@@ -118,7 +116,8 @@ class ValidatePrimaryDataTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::PRIMARY_DATA_SAME_TYPE
+                Messages::PRIMARY_DATA_SAME_TYPE,
+                403
             ],
             'collection with not valid resource identifier objects' => [
                 [
@@ -133,7 +132,8 @@ class ValidatePrimaryDataTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'not safe meta member' => [
                 [
@@ -147,7 +147,8 @@ class ValidatePrimaryDataTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }

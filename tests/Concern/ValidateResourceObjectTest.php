@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -27,9 +24,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider resourceFieldNameIsForbiddenProvider
      */
-    public function resourceFieldNameIsForbidden($name, $failureMessage)
+    public function resourceFieldNameIsForbidden($name, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->isNotForbiddenResourceFieldName($name);
     }
 
@@ -38,11 +35,13 @@ class ValidateResourceObjectTest extends TestCase
         return [
             Members::TYPE => [
                 Members::TYPE,
-                Messages::FIELDS_NAME_NOT_ALLOWED
+                Messages::FIELDS_NAME_NOT_ALLOWED,
+                403
             ],
             Members::ID => [
                 Members::ID,
-                Messages::FIELDS_NAME_NOT_ALLOWED
+                Messages::FIELDS_NAME_NOT_ALLOWED,
+                403
             ]
         ];
     }
@@ -65,9 +64,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider notValidResourceLinksObjectProvider
      */
-    public function resourceLinksObjectIsNotValid($json, $strict, $failureMessage)
+    public function resourceLinksObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceLinksObject($json, $strict);
     }
 
@@ -79,7 +78,8 @@ class ValidateResourceObjectTest extends TestCase
                     'anything' => 'not allowed'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ]
         ];
     }
@@ -124,10 +124,10 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider hasNotValidTopLevelStructureProvider
      */
-    public function resourceHasNotValidTopLevelStructure($json, $failureMessage)
+    public function resourceHasNotValidTopLevelStructure($json, $failureMessage, $code)
     {
         $strict = true;
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObjectTopLevelStructure($json, $strict);
     }
 
@@ -136,7 +136,8 @@ class ValidateResourceObjectTest extends TestCase
         return [
             'not an array' => [
                 'failed',
-                Messages::RESOURCE_IS_NOT_ARRAY
+                Messages::RESOURCE_IS_NOT_ARRAY,
+                403
             ],
             'id is missing' => [
                 [
@@ -145,7 +146,8 @@ class ValidateResourceObjectTest extends TestCase
                         'attr' => 'value'
                     ]
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_ABSENT
+                Messages::RESOURCE_ID_MEMBER_IS_ABSENT,
+                403
             ],
             'type is missing' => [
                 [
@@ -154,7 +156,8 @@ class ValidateResourceObjectTest extends TestCase
                         'attr' => 'value'
                     ]
                 ],
-                Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT
+                Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT,
+                403
             ],
             'missing mandatory member' => [
                 [
@@ -164,7 +167,8 @@ class ValidateResourceObjectTest extends TestCase
                 sprintf(
                     Messages::CONTAINS_AT_LEAST_ONE,
                     implode(', ', [Members::ATTRIBUTES, Members::RELATIONSHIPS, Members::LINKS, Members::META])
-                )
+                ),
+                403
             ],
             'member not allowed' => [
                 [
@@ -175,32 +179,54 @@ class ValidateResourceObjectTest extends TestCase
                     ],
                     'wrong' => 'wrong'
                 ],
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ]
         ];
     }
 
     /**
      * @test
+     * @dataProvider resourceIdMemberIsValidProvider
      */
-    public function resourceIdMemberIsValid()
+    public function resourceIdMemberIsValid($method, $json)
     {
-        $json = [
-            Members::ID => '1',
-            Members::TYPE => 'test'
-        ];
-
-        (new ValidateService())->validateResourceIdMember($json);
+        (new ValidateService($method))->validateResourceIdMember($json);
         $this->succeed();
+    }
+
+    public function resourceIdMemberIsValidProvider()
+    {
+        return [
+            'id is required (PATCH)' => [
+                'PATCH',
+                [
+                    Members::ID => '1',
+                    Members::TYPE => 'test',
+                    Members::ATTRIBUTES => [
+                        'attr1' => 'value1'
+                    ]
+                ]
+            ],
+            'id is not required' => [
+                'POST',
+                [
+                    Members::TYPE => 'test',
+                    Members::ATTRIBUTES => [
+                        'attr1' => 'value1'
+                    ]
+                ]
+            ]
+        ];
     }
 
     /**
      * @test
      * @dataProvider notValidResourceIdMemberProvider
      */
-    public function resourceIdMemberIsNotValid($json, $failureMessage)
+    public function resourceIdMemberIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceIdMember($json);
     }
 
@@ -212,14 +238,16 @@ class ValidateResourceObjectTest extends TestCase
                     Members::ID => '',
                     Members::TYPE => 'test'
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_EMPTY
+                Messages::RESOURCE_ID_MEMBER_IS_EMPTY,
+                403
             ],
             'id is not a string' => [
                 [
                     Members::ID => 1,
                     Members::TYPE => 'test'
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                403
             ]
         ];
     }
@@ -243,9 +271,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider notValidResourceTypeMemberProvider
      */
-    public function resourceTypeMemberIsNotValid($json, $strict, $failureMessage)
+    public function resourceTypeMemberIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceTypeMember($json, $strict);
     }
 
@@ -258,7 +286,8 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => ''
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY
+                Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY,
+                403
             ],
             'type is not a string' => [
                 [
@@ -266,7 +295,8 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 404
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                403
             ],
             'type value has forbidden characters' => [
                 [
@@ -274,7 +304,8 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 'test+1'
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'type value has not safe characters' => [
                 [
@@ -282,7 +313,8 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 'test 1'
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }
@@ -316,9 +348,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider isNotValidResourceFieldProvider
      */
-    public function resourceFieldIsNotValid($json, $failureMessage)
+    public function resourceFieldIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateFields($json);
     }
 
@@ -341,7 +373,8 @@ class ValidateResourceObjectTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::FIELDS_HAVE_SAME_NAME
+                Messages::FIELDS_HAVE_SAME_NAME,
+                403
             ],
             'attribute named type or id' => [
                 [
@@ -352,7 +385,8 @@ class ValidateResourceObjectTest extends TestCase
                         Members::ID => 'not valid'
                     ]
                 ],
-                Messages::FIELDS_NAME_NOT_ALLOWED
+                Messages::FIELDS_NAME_NOT_ALLOWED,
+                403
             ],
             'relationship named type or id' => [
                 [
@@ -370,7 +404,8 @@ class ValidateResourceObjectTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::FIELDS_NAME_NOT_ALLOWED
+                Messages::FIELDS_NAME_NOT_ALLOWED,
+                403
             ]
         ];
     }
@@ -415,9 +450,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider isNotValidResourceObjectProvider
      */
-    public function resourceObjectIsNotValid($json, $strict, $failureMessage)
+    public function resourceObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObject($json, $strict);
     }
 
@@ -427,7 +462,8 @@ class ValidateResourceObjectTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_IS_NOT_ARRAY
+                Messages::RESOURCE_IS_NOT_ARRAY,
+                403
             ],
             'id is not valid' => [
                 [
@@ -438,7 +474,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                403
             ],
             'type is not valid' => [
                 [
@@ -449,7 +486,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                403
             ],
             'missing mandatory member' => [
                 [
@@ -460,7 +498,8 @@ class ValidateResourceObjectTest extends TestCase
                 sprintf(
                     Messages::CONTAINS_AT_LEAST_ONE,
                     implode(', ', [Members::ATTRIBUTES, Members::RELATIONSHIPS, Members::LINKS, Members::META])
-                )
+                ),
+                403
             ],
             'member not allowed' => [
                 [
@@ -472,7 +511,8 @@ class ValidateResourceObjectTest extends TestCase
                     'wrong' => 'wrong'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'attributes not valid' => [
                 [
@@ -484,7 +524,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'fields not valid (attribute and relationship with the same name)' => [
                 [
@@ -503,7 +544,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::FIELDS_HAVE_SAME_NAME
+                Messages::FIELDS_HAVE_SAME_NAME,
+                403
             ],
             'fields not valid (attribute named "type" or "id")' => [
                 [
@@ -515,7 +557,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::FIELDS_NAME_NOT_ALLOWED
+                Messages::FIELDS_NAME_NOT_ALLOWED,
+                403
             ],
             'relationship not valid' => [
                 [
@@ -535,7 +578,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'meta with not safe member name' => [
                 [
@@ -549,7 +593,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'links not valid' => [
                 [
@@ -563,7 +608,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ]
         ];
     }
@@ -605,9 +651,9 @@ class ValidateResourceObjectTest extends TestCase
      * @test
      * @dataProvider resourceObjectCollectionIsNotValidProvider
      */
-    public function resourceObjectCollectionIsNotValid($json, $strict, $failureMessage)
+    public function resourceObjectCollectionIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObjectCollection($json, $strict);
     }
 
@@ -617,7 +663,8 @@ class ValidateResourceObjectTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_COLLECTION_NOT_ARRAY
+                Messages::RESOURCE_COLLECTION_NOT_ARRAY,
+                403
             ],
             'not an array of objects' => [
                 [
@@ -628,7 +675,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MUST_BE_ARRAY_OF_OBJECTS
+                Messages::MUST_BE_ARRAY_OF_OBJECTS,
+                403
             ],
             'not valid collection' => [
                 [
@@ -641,7 +689,8 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                403
             ]
         ];
     }

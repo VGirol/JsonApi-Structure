@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure\Constraint;
 
+use VGirol\JsonApiStructure\Messages;
+
 class ContainsAtLeastOne extends Constraint
 {
     /**
@@ -24,9 +26,9 @@ class ContainsAtLeastOne extends Constraint
     /**
      * Returns a string representation of the constraint.
      */
-    public function toString(): string
+    public function default(): string
     {
-        return sprintf('Must contain at least one element of "%s".', implode(', ', $this->members));
+        return sprintf(Messages::CONTAINS_AT_LEAST_ONE, implode(', ', $this->members));
     }
 
     /**

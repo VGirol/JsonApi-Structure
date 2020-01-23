@@ -1,10 +1,7 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -30,9 +27,9 @@ class ValidateMetaObjectTest extends TestCase
      * @test
      * @dataProvider notValidMetaObjectProvider
      */
-    public function metaObjectIsNotValid($json, $strict, $failureMessage)
+    public function metaObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService)->validateMetaObject($json, $strict);
     }
 
@@ -46,7 +43,8 @@ class ValidateMetaObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::META_OBJECT_IS_NOT_ARRAY
+                Messages::META_OBJECT_IS_NOT_ARRAY,
+                403
             ],
             'array of objects' => [
                 [
@@ -54,21 +52,24 @@ class ValidateMetaObjectTest extends TestCase
                     [ 'key2' => 'element' ]
                 ],
                 false,
-                Messages::META_OBJECT_IS_NOT_ARRAY
+                Messages::META_OBJECT_IS_NOT_ARRAY,
+                403
             ],
             'key is not valid' => [
                 [
                     'key+' => 'value'
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'key is not safe' => [
                 [
                     'not valid' => 'due to the blank character'
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }

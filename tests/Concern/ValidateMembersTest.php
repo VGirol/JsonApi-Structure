@@ -1,12 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
-use TypeError;
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -30,17 +26,17 @@ class ValidateMembersTest extends TestCase
 
     /**
      * @test
-     * @dataProvider hasMemberFailedProvider
+     * @dataProvider hasMemberInvalidArgumentProvider
      */
-    public function hasMemberFailed($expected, $json, $exceptionClass, $failureMessage, $code)
+    public function hasMemberInvalidArgument($expected, $json, $arg, $type, $value)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setInvalidArgumentException($arg, $type, $value);
         (new ValidateService())->hasMember($expected, $json);
     }
 
     /**
      */
-    public function hasMemberFailedProvider()
+    public function hasMemberInvalidArgumentProvider()
     {
         return [
             '$expected is not a string' => [
@@ -48,27 +44,34 @@ class ValidateMembersTest extends TestCase
                 [
                     'anything' => 'else'
                 ],
-                TypeError::class,
-                null,
-                null
+                1,
+                'string',
+                666
             ],
             '$json is not an array' => [
                 'anything',
                 'invalid',
-                TypeError::class,
-                null,
-                null
-            ],
-            'member is not present' => [
-                'member',
-                [
-                    'anything' => 'else'
-                ],
-                ValidationException::class,
-                sprintf(Messages::HAS_MEMBER, 'member'),
-                400
-            ],
+                2,
+                'array',
+                'invalid'
+            ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function hasMemberFailed()
+    {
+        $expected = 'member';
+        $json = [
+            'anything' => 'else'
+        ];
+        $failureMessage = sprintf(Messages::HAS_MEMBER, 'member');
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->hasMember($expected, $json);
     }
 
     /**
@@ -91,15 +94,15 @@ class ValidateMembersTest extends TestCase
 
     /**
      * @test
-     * @dataProvider hasMembersFailedProvider
+     * @dataProvider hasMembersInvalidArgumentProvider
      */
-    public function hasMembersFailed($expected, $json, $exceptionClass, $failureMessage, $code)
+    public function hasMembersInvalidArgument($expected, $json, $arg, $type, $value)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setInvalidArgumentException($arg, $type, $value);
         (new ValidateService())->hasMembers($expected, $json);
     }
 
-    public function hasMembersFailedProvider()
+    public function hasMembersInvalidArgumentProvider()
     {
         return [
             '$expected is not an array' => [
@@ -107,32 +110,39 @@ class ValidateMembersTest extends TestCase
                 [
                     'anything' => 'else'
                 ],
-                TypeError::class,
-                null,
-                null
+                1,
+                'array',
+                'invalid'
             ],
             '$json is not an array' => [
                 [
                     'anything'
                 ],
                 'invalid',
-                TypeError::class,
-                null,
-                null
-            ],
-            'expected members are not present' => [
-                [
-                    'anything'
-                ],
-                [
-                    'member1',
-                    'member2'
-                ],
-                ValidationException::class,
-                sprintf(Messages::HAS_MEMBER, 'anything'),
-                400
+                2,
+                'array',
+                'invalid'
             ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function hasMembersFailed()
+    {
+        $expected = [
+            'anything'
+        ];
+        $json = [
+            'member1',
+            'member2'
+        ];
+        $failureMessage = sprintf(Messages::HAS_MEMBER, 'anything');
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->hasMembers($expected, $json);
     }
 
     /**
@@ -154,50 +164,60 @@ class ValidateMembersTest extends TestCase
 
     /**
      * @test
-     * @dataProvider hasOnlyMembersFailedProvider
+     * @dataProvider hasOnlyMembersInvalidArgumentProvider
      */
-    public function hasOnlyMembersFailed($expected, $json, $exceptionClass, $failureMessage, $code)
+    public function hasOnlyMembersInvalidArgument($expected, $json, $arg, $type, $value)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setInvalidArgumentException($arg, $type, $value);
         (new ValidateService())->hasOnlyMembers($expected, $json);
     }
 
-    public function hasOnlyMembersFailedProvider()
+    public function hasOnlyMembersInvalidArgumentProvider()
     {
+        $expected = 666;
+        $json = 'invalid';
+
         return [
             '$expected is not an array' => [
-                666,
+                $expected,
                 [
                     'anything' => 'else'
                 ],
-                TypeError::class,
-                null,
-                null
+                1,
+                'array',
+                $expected
             ],
             '$json is not an array' => [
                 [
                     'anything'
                 ],
-                'invalid',
-                TypeError::class,
-                null,
-                null
-            ],
-            'not has only mermbers' => [
-                [
-                    'member1',
-                    'member2'
-                ],
-                [
-                    'member1' => 'value1',
-                    'member2' => 'value2',
-                    'anything' => 'error'
-                ],
-                ValidationException::class,
-                sprintf(Messages::HAS_ONLY_MEMBERS, implode(', ', ['member1', 'member2'])),
-                400
+                $json,
+                2,
+                'array',
+                $json
             ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function hasOnlyMembersFailed()
+    {
+        $expected = [
+            'member1',
+            'member2'
+        ];
+        $json = [
+            'member1' => 'value1',
+            'member2' => 'value2',
+            'anything' => 'error'
+        ];
+        $failureMessage = sprintf(Messages::HAS_ONLY_MEMBERS, implode(', ', $expected));
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->hasOnlyMembers($expected, $json);
     }
 
     /**
@@ -219,44 +239,54 @@ class ValidateMembersTest extends TestCase
 
     /**
      * @test
-     * @dataProvider notHasMemberFailedProvider
+     * @dataProvider notHasMemberInvalidArgumentProvider
      */
-    public function notHasMemberFailed($expected, $json, $exceptionClass, $failureMessage, $code)
+    public function notHasMemberInvalidArgument($expected, $json, $arg, $type, $value)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setInvalidArgumentException($arg, $type, $value);
         (new ValidateService())->notHasMember($expected, $json);
     }
 
-    public function notHasMemberFailedProvider()
+    public function notHasMemberInvalidArgumentProvider()
     {
+        $expected = 666;
+        $json = 'invalid';
+
         return [
             '$expected is not a string' => [
-                666,
+                $expected,
                 [
                     'anything' => 'else'
                 ],
-                TypeError::class,
-                null,
-                null
+                1,
+                'string',
+                $expected
             ],
             '$json is not an array' => [
                 'anything',
-                'invalid',
-                TypeError::class,
-                null,
-                null
-            ],
-            'member already present' => [
-                'anything',
-                [
-                    'member' => 'value',
-                    'anything' => 'error'
-                ],
-                ValidationException::class,
-                sprintf(Messages::NOT_HAS_MEMBER, 'anything'),
-                400
+                $json,
+                2,
+                'array',
+                $json
             ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function notHasMemberFailed()
+    {
+        $expected = 'anything';
+        $json = [
+            'member' => 'value',
+            'anything' => 'error'
+        ];
+        $failureMessage = sprintf(Messages::NOT_HAS_MEMBER, 'anything');
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->notHasMember($expected, $json);
     }
 
     /**
@@ -281,40 +311,59 @@ class ValidateMembersTest extends TestCase
 
     /**
      * @test
-     * @dataProvider notHasMembersFailedProvider
+     * @dataProvider notHasMembersInvalidArgumentProvider
      */
-    public function notHasMembersFailed($expected, $json, $exceptionClass, $failureMessage, $code)
+    public function notHasMembersInvalidArgument($expected, $json, $arg, $type, $value)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setInvalidArgumentException($arg, $type, $value);
         (new ValidateService())->notHasMembers($expected, $json);
     }
 
-    public function notHasMembersFailedProvider()
+    public function notHasMembersInvalidArgumentProvider()
     {
+        $expected = 666;
+        $json = 'something';
+
         return [
             '$expected is not an array' => [
-                666,
+                $expected,
                 [
                     'anything' => 'else'
                 ],
-                TypeError::class,
-                null,
-                null
+                1,
+                'array',
+                $expected
             ],
-            'members already present' => [
+            '$json is not an array' => [
                 [
-                    'anything',
-                    'something'
+                    'anything'
                 ],
-                [
-                    'member' => 'value',
-                    'anything' => 'error'
-                ],
-                ValidationException::class,
-                sprintf(Messages::NOT_HAS_MEMBER, 'anything'),
-                400
+                $json,
+                2,
+                'array',
+                $json
             ]
         ];
+    }
+
+    /**
+     * @test
+     */
+    public function notHasMembersFailed()
+    {
+        $expected = [
+            'anything',
+            'something'
+        ];
+        $json = [
+            'member' => 'value',
+            'anything' => 'error'
+        ];
+        $failureMessage = sprintf(Messages::NOT_HAS_MEMBER, 'anything');
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->notHasMembers($expected, $json);
     }
 
     /**
@@ -395,7 +444,7 @@ class ValidateMembersTest extends TestCase
             'member' => 'value'
         ];
 
-        $this->setFailure(ValidationException::class, null, null);
+        $this->setFailure(null, null);
         (new ValidateService())->{$fn}($json);
     }
 

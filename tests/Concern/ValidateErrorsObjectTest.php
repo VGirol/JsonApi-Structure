@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -28,25 +25,18 @@ class ValidateErrorsObjectTest extends TestCase
 
     /**
      * @test
-     * @dataProvider notValidErrorLinksObjectProvider
      */
-    public function errorLinksObjectIsNotValid($json, $strict, $failureMessage)
+    public function errorLinksObjectIsNotValid()
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
-        (new ValidateService())->validateErrorLinksObject($json, $strict);
-    }
-
-    public function notValidErrorLinksObjectProvider()
-    {
-        return [
-            'not allowed member' => [
-                [
-                    'anything' => 'not allowed'
-                ],
-                false,
-                Messages::ONLY_ALLOWED_MEMBERS
-            ]
+        $json = [
+            'anything' => 'not allowed'
         ];
+        $strict = false;
+        $failureMessage = Messages::ONLY_ALLOWED_MEMBERS;
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->validateErrorLinksObject($json, $strict);
     }
 
     /**
@@ -81,9 +71,9 @@ class ValidateErrorsObjectTest extends TestCase
      * @test
      * @dataProvider notValidErrorSourceObjectProvider
      */
-    public function errorSourceObjectIsNotValid($json, $failureMessage)
+    public function errorSourceObjectIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateErrorSourceObject($json);
     }
 
@@ -92,28 +82,32 @@ class ValidateErrorsObjectTest extends TestCase
         return [
             'not an array' => [
                 'error',
-                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY
+                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY,
+                400
             ],
             'pointer is not a string' => [
                 [
                     'valid' => 'valid',
                     Members::ERROR_POINTER => 666
                 ],
-                Messages::ERROR_SOURCE_POINTER_IS_NOT_STRING
+                Messages::ERROR_SOURCE_POINTER_IS_NOT_STRING,
+                400
             ],
             'pointer does not start with a /' => [
                 [
                     'valid' => 'valid',
                     Members::ERROR_POINTER => 'not valid'
                 ],
-                Messages::ERROR_SOURCE_POINTER_START
+                Messages::ERROR_SOURCE_POINTER_START,
+                400
             ],
             'parameter is not a string' => [
                 [
                     'valid' => 'valid',
                     Members::ERROR_PARAMETER => 666
                 ],
-                Messages::ERROR_SOURCE_PARAMETER_IS_NOT_STRING
+                Messages::ERROR_SOURCE_PARAMETER_IS_NOT_STRING,
+                400
             ]
         ];
     }
@@ -150,9 +144,9 @@ class ValidateErrorsObjectTest extends TestCase
      * @test
      * @dataProvider notValidErrorObjectProvider
      */
-    public function errorObjectIsNotValid($json, $strict, $failureMessage)
+    public function errorObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateErrorObject($json, $strict);
     }
 
@@ -162,12 +156,14 @@ class ValidateErrorsObjectTest extends TestCase
             'not an array' => [
                 'error',
                 false,
-                Messages::ERROR_OBJECT_NOT_ARRAY
+                Messages::ERROR_OBJECT_NOT_ARRAY,
+                400
             ],
             'empty array' => [
                 [],
                 false,
-                Messages::ERROR_OBJECT_NOT_EMPTY
+                Messages::ERROR_OBJECT_NOT_EMPTY,
+                400
             ],
             'not allowed member' => [
                 [
@@ -175,7 +171,8 @@ class ValidateErrorsObjectTest extends TestCase
                     'not' => 'not valid',
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'status is not a string' => [
                 [
@@ -183,7 +180,8 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 666,
                 ],
                 false,
-                Messages::ERROR_STATUS_IS_NOT_STRING
+                Messages::ERROR_STATUS_IS_NOT_STRING,
+                400
             ],
             'code is not a string' => [
                 [
@@ -191,7 +189,8 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_CODE_IS_NOT_STRING
+                Messages::ERROR_CODE_IS_NOT_STRING,
+                400
             ],
             'title is not a string' => [
                 [
@@ -199,7 +198,8 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_TITLE_IS_NOT_STRING
+                Messages::ERROR_TITLE_IS_NOT_STRING,
+                400
             ],
             'details is not a string' => [
                 [
@@ -207,7 +207,8 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_DETAILS_IS_NOT_STRING
+                Messages::ERROR_DETAILS_IS_NOT_STRING,
+                400
             ],
             'source is not an array' => [
                 [
@@ -215,7 +216,8 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_SOURCE => 'not valid'
                 ],
                 false,
-                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY
+                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY,
+                400
             ],
             'source pointer is not a string' => [
                 [
@@ -225,7 +227,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ERROR_SOURCE_POINTER_IS_NOT_STRING
+                Messages::ERROR_SOURCE_POINTER_IS_NOT_STRING,
+                400
             ],
             'source pointer is not valid' => [
                 [
@@ -235,7 +238,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ERROR_SOURCE_POINTER_START
+                Messages::ERROR_SOURCE_POINTER_START,
+                400
             ],
             'source parameter is not a string' => [
                 [
@@ -245,7 +249,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ERROR_SOURCE_PARAMETER_IS_NOT_STRING
+                Messages::ERROR_SOURCE_PARAMETER_IS_NOT_STRING,
+                400
             ],
             'links is not valid' => [
                 [
@@ -255,7 +260,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'meta is not valid' => [
                 [
@@ -265,7 +271,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }
@@ -295,9 +302,9 @@ class ValidateErrorsObjectTest extends TestCase
      * @test
      * @dataProvider notValidErrorsObjectProvider
      */
-    public function errorsObjectIsNotValid($json, $strict, $failureMessage)
+    public function errorsObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage);
         (new ValidateService())->validateErrorsObject($json, $strict);
     }
 
@@ -309,7 +316,8 @@ class ValidateErrorsObjectTest extends TestCase
                     'error' => 'not valid'
                 ],
                 false,
-                Messages::ERRORS_OBJECT_NOT_ARRAY
+                Messages::ERRORS_OBJECT_NOT_ARRAY,
+                400
             ],
             'error object not valid' => [
                 [
@@ -319,7 +327,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ERROR_STATUS_IS_NOT_STRING
+                Messages::ERROR_STATUS_IS_NOT_STRING,
+                400
             ],
             'error object not safe' => [
                 [
@@ -331,7 +340,8 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                400
             ]
         ];
     }

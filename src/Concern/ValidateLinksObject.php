@@ -29,13 +29,10 @@ trait ValidateLinksObject
     public function validateLinksObject($json, array $allowedMembers, bool $strict): void
     {
         if (!\is_array($json)) {
-            $this->throw(Messages::LINKS_OBJECT_NOT_ARRAY, 400);
+            $this->throw(Messages::LINKS_OBJECT_NOT_ARRAY, 403);
         }
 
-        $this->containsOnlyAllowedMembers(
-            $allowedMembers,
-            $json
-        );
+        $this->containsOnlyAllowedMembers($allowedMembers, $json);
 
         foreach ($json as $link) {
             $this->validateLinkObject($link, $strict);
@@ -50,8 +47,8 @@ trait ValidateLinksObject
      * 2) in case it is an array :
      *      3) asserts that it has the "href" member.
      *      4) asserts that it contains only the following allowed members : "href" and "meta"
-     *       (@see assertContainsOnlyAllowedMembers).
-     *      5) if present, asserts that the "meta" object is valid (@see assertIsValidMetaObject).
+     *       (@see containsOnlyAllowedMembers).
+     *      5) if present, asserts that the "meta" object is valid (@see validateMetaObject).
      *
      * @param array|string|null $json
      * @param boolean           $strict If true, unsafe characters are not allowed when checking members name.
@@ -66,24 +63,31 @@ trait ValidateLinksObject
         }
 
         if (!\is_array($json)) {
-            $this->throw(Messages::LINK_OBJECT_IS_NOT_ARRAY, 400);
+            $this->throw(Messages::LINK_OBJECT_IS_NOT_ARRAY, 403);
         }
 
         if (!\array_key_exists(Members::LINK_HREF, $json)) {
-            $this->throw(Messages::LINK_OBJECT_MISS_HREF_MEMBER, 400);
+            $this->throw(Messages::LINK_OBJECT_MISS_HREF_MEMBER, 403);
         }
 
-        $allowed = [
-            Members::LINK_HREF,
-            Members::META
-        ];
-        $this->containsOnlyAllowedMembers(
-            $allowed,
-            $json
-        );
+        $this->containsOnlyAllowedMembers($this->getRule('LinkObject.Allowed'), $json);
 
         if (\array_key_exists(Members::META, $json)) {
             $this->validateMetaObject($json[Members::META], $strict);
         }
+    }
+
+    /**
+     * Check if document's primary data or relationship's data is a collection and can be paginated
+     *
+     * @param array $json
+     *
+     * @return boolean
+     */
+    private function canBePaginated($json): bool
+    {
+        return \array_key_exists(Members::DATA, $json)
+                && \is_array($json[Members::DATA])
+                && $this->isArrayOfObjects($json[Members::DATA], true);
     }
 }

@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -60,9 +57,9 @@ class ValidateResourceLinkageTest extends TestCase
      * @test
      * @dataProvider notValidResourceLinkageProvider
      */
-    public function resourceLinkageIsNotValid($json, $strict, $failureMessage)
+    public function resourceLinkageIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceLinkage($json, $strict);
     }
 
@@ -72,7 +69,8 @@ class ValidateResourceLinkageTest extends TestCase
             'not an array' => [
                 'not valid',
                 false,
-                Messages::RESOURCE_LINKAGE_NOT_ARRAY
+                Messages::RESOURCE_LINKAGE_NOT_ARRAY,
+                403
             ],
             'not valid single resource identifier object' => [
                 [
@@ -81,7 +79,8 @@ class ValidateResourceLinkageTest extends TestCase
                     'anything' => 'not valid'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'not valid array of resource identifier objects' => [
                 [
@@ -96,7 +95,8 @@ class ValidateResourceLinkageTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'not safe member name' => [
                 [
@@ -107,7 +107,8 @@ class ValidateResourceLinkageTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }
@@ -134,9 +135,9 @@ class ValidateResourceLinkageTest extends TestCase
      * @test
      * @dataProvider isNotValidResourceIdentifierObjectProvider
      */
-    public function resourceIdentifierObjectIsNotValid($json, $strict, $failureMessage)
+    public function resourceIdentifierObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateResourceIdentifierObject($json, $strict);
     }
 
@@ -146,14 +147,16 @@ class ValidateResourceLinkageTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_IDENTIFIER_IS_NOT_ARRAY
+                Messages::RESOURCE_IDENTIFIER_IS_NOT_ARRAY,
+                403
             ],
             'id is missing' => [
                 [
                     Members::TYPE => 'test'
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_ABSENT
+                Messages::RESOURCE_ID_MEMBER_IS_ABSENT,
+                403
             ],
             'id is not valid' => [
                 [
@@ -161,14 +164,16 @@ class ValidateResourceLinkageTest extends TestCase
                     Members::TYPE => 'test'
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                403
             ],
             'type is missing' => [
                 [
                     Members::ID => '1'
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT
+                Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT,
+                403
             ],
             'type is not valid' => [
                 [
@@ -176,7 +181,8 @@ class ValidateResourceLinkageTest extends TestCase
                     Members::TYPE => 404
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING
+                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                403
             ],
             'member not allowed' => [
                 [
@@ -185,7 +191,8 @@ class ValidateResourceLinkageTest extends TestCase
                     'wrong' => 'wrong'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'meta has not valid member name' => [
                 [
@@ -196,7 +203,8 @@ class ValidateResourceLinkageTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }

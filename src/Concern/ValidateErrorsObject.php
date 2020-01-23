@@ -16,8 +16,8 @@ trait ValidateErrorsObject
      * Asserts that a json fragment is a valid errors object.
      *
      * It will do the following checks :
-     * 1) asserts that the errors object is an array of objects (@see assertIsArrayOfObjects).
-     * 2) asserts that each error object of the collection is valid (@see assertIsValidErrorObject).
+     * 1) asserts that the errors object is an array of objects (@see isArrayOfObjects).
+     * 2) asserts that each error object of the collection is valid (@see validateErrorObject).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -27,10 +27,7 @@ trait ValidateErrorsObject
      */
     public function validateErrorsObject($json, bool $strict): void
     {
-        $this->isArrayOfObjects(
-            $json,
-            Messages::ERRORS_OBJECT_NOT_ARRAY
-        );
+        $this->isArrayOfObjects($json, false, Messages::ERRORS_OBJECT_NOT_ARRAY, 400);
 
         foreach ($json as $error) {
             $this->validateErrorObject($error, $strict);
@@ -43,16 +40,16 @@ trait ValidateErrorsObject
      * It will do the following checks :
      * 1) asserts that the error object is not empty.
      * 2) asserts it contains only the following allowed members :
-     * "id", "links", "status", "code", "title", "details", "source", "meta" (@see assertContainsOnlyAllowedMembers).
+     * "id", "links", "status", "code", "title", "details", "source", "meta" (@see containsOnlyAllowedMembers).
      *
      * Optionaly, if presents, it will checks :
      * 3) asserts that the "status" member is a string.
      * 4) asserts that the "code" member is a string.
      * 5) asserts that the "title" member is a string.
      * 6) asserts that the "details" member is a string.
-     * 7) asserts that the "source" member is valid(@see assertIsValidErrorSourceObject).
-     * 8) asserts that the "links" member is valid(@see assertIsValidErrorLinksObject).
-     * 9) asserts that the "meta" member is valid(@see assertIsValidMetaObject).
+     * 7) asserts that the "source" member is valid(@see validateErrorSourceObject).
+     * 8) asserts that the "links" member is valid(@see validateErrorLinksObject).
+     * 9) asserts that the "meta" member is valid(@see validateMetaObject).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -70,17 +67,7 @@ trait ValidateErrorsObject
             $this->throw(Messages::ERROR_OBJECT_NOT_EMPTY, 400);
         }
 
-        $allowed = [
-            Members::ID,
-            Members::LINKS,
-            Members::ERROR_STATUS,
-            Members::ERROR_CODE,
-            Members::ERROR_TITLE,
-            Members::ERROR_DETAILS,
-            Members::ERROR_SOURCE,
-            Members::META
-        ];
-        $this->containsOnlyAllowedMembers($allowed, $json);
+        $this->containsOnlyAllowedMembers($this->getRule('ErrorObject.Allowed'), $json);
 
         $checks = [
             Members::ERROR_STATUS => Messages::ERROR_STATUS_IS_NOT_STRING,
@@ -112,7 +99,7 @@ trait ValidateErrorsObject
      * Asserts that a json fragment is a valid error links object.
      *
      * It will do the following checks :
-     * 1) asserts that le links object is valid (@see assertIsValidLinksObject with only "about" member allowed).
+     * 1) asserts that le links object is valid (@see validateLinksObject with only "about" member allowed).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -122,8 +109,7 @@ trait ValidateErrorsObject
      */
     public function validateErrorLinksObject($json, bool $strict): void
     {
-        $allowed = [Members::LINK_ABOUT];
-        $this->validateLinksObject($json, $allowed, $strict);
+        $this->validateLinksObject($json, $this->getRule('ErrorObject.LinksObject.Allowed'), $strict);
     }
 
     /**

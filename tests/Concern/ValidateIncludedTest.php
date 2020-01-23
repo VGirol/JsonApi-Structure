@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -82,9 +79,9 @@ class ValidateIncludedTest extends TestCase
      * @test
      * @dataProvider notValidIncludedProvider
      */
-    public function compoundDocumentIsNotValid($json, $strict, $failureMessage)
+    public function compoundDocumentIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateIncludedCollection($json[Members::INCLUDED], $json[Members::DATA], $strict);
     }
 
@@ -100,7 +97,8 @@ class ValidateIncludedTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MUST_BE_ARRAY_OF_OBJECTS
+                Messages::MUST_BE_ARRAY_OF_OBJECTS,
+                403
             ],
             'one included resource is not identified by a resource identifier object' => [
                 [
@@ -134,7 +132,8 @@ class ValidateIncludedTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::INCLUDED_RESOURCE_NOT_LINKED
+                Messages::INCLUDED_RESOURCE_NOT_LINKED,
+                403
             ],
             'a resource is included twice' => [
                 [
@@ -168,7 +167,8 @@ class ValidateIncludedTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE
+                Messages::COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE,
+                403
             ],
             'an included resource is not valid' => [
                 [
@@ -195,7 +195,8 @@ class ValidateIncludedTest extends TestCase
                 sprintf(
                     Messages::CONTAINS_AT_LEAST_ONE,
                     implode(', ', [Members::ATTRIBUTES, Members::RELATIONSHIPS, Members::LINKS, Members::META])
-                )
+                ),
+                403
             ]
         ];
     }

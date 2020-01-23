@@ -26,7 +26,7 @@ class ContainsOnlyAllowedMembers extends Constraint
     /**
      * Returns a string representation of the constraint.
      */
-    public function toString(): string
+    public function default(): string
     {
         return Messages::ONLY_ALLOWED_MEMBERS;
     }

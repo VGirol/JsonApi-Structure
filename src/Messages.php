@@ -89,8 +89,6 @@ abstract class Messages
     'The value of the "type" member CAN NOT be empty.';
     const RESOURCE_TYPE_MEMBER_IS_NOT_STRING =
     'The value of the "type" member MUST be a string.';
-    const TEST_FAILED =
-    'Failed asserting that test has failed.';
     const TOP_LEVEL_DATA_AND_ERROR =
     'The members "data" and "errors" MUST NOT coexist in the same JSON document.';
     const TOP_LEVEL_DATA_AND_INCLUDED =
@@ -100,7 +98,7 @@ abstract class Messages
     const COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE =
     'A compound document MUST NOT include more than one resource object for each "type" and "id" pair.';
     const CONTAINS_AT_LEAST_ONE =
-    'Must contain at least one element of "%s"';
+    'contains at least one element of "%s".';
     const JSONAPI_VERSION_IS_NOT_STRING =
     'If present, the value of the version member MUST be a string.';
     const LINK_OBJECT_IS_NOT_ARRAY =
@@ -111,30 +109,21 @@ abstract class Messages
     'Failed asserting that an array is an array of objects.';
     const INCLUDED_RESOURCE_NOT_LINKED =
     'An included resource MUST correspond to an existing resource linkage.';
-    const ERRORS_OBJECT_CONTAINS_NOT_ENOUGH_ERRORS =
-    'Errors array must be greater or equal than the expected errors array.';
-    const ERRORS_OBJECT_DOES_NOT_CONTAIN_EXPECTED_ERROR =
-    'The "errors" member does not contain the expected error %s.';
-    const RESOURCE_COLLECTION_HAVE_NOT_SAME_LENGTH =
-    'Failed asserting that the resource collection length (%u) is equal to %u.';
-    const RESOURCE_IS_NOT_EQUAL =
-    'Failed asserting that the resource %s is equal to %s.';
-    const PAGINATION_LINKS_NOT_EQUAL =
-    'Failed asserting that pagination links equal expected values.';
-    const PAGINATION_META_NOT_EQUAL =
-    'Failed asserting that pagination meta equal expected values.';
-    const RESOURCE_LINKAGE_COLLECTION_MUST_BE_EMPTY =
-    'Failed asserting that the resource linkage collection is empty.';
-    const RESOURCE_LINKAGE_COLLECTION_HAVE_NOT_SAME_LENGTH =
-    'Failed asserting that the resource linkage collection length (%u) is equal to %u.';
-    const RESOURCE_IDENTIFIER_IS_NOT_EQUAL =
-    'Failed asserting that the resource identifier %s is equal to %s.';
-    const RESOURCE_LINKAGE_MUST_BE_NULL =
-    'Failed asserting that the resource linkage %s is null.';
-    const RESOURCE_LINKAGE_MUST_NOT_BE_NULL =
-    'Failed asserting that the resource linkage is not null.';
-    const LINKS_OBJECT_HAVE_NOT_SAME_LENGTH =
-    'Failed asserting that the links collection length (%u) is equal to %u.';
-    const JSONAPI_OBJECT_NOT_EQUAL =
-    'Failed asserting that the "jsonapi" object %s is equal to %s.';
+    const MEMBER_NAME_NOT_VALID =
+    'is a valid member name';
+
+    public const REQUEST_ERROR_NO_DATA_MEMBER =
+    'The request MUST include a top-level member named "data".';
+    public const REQUEST_ERROR_DATA_MEMBER_NULL =
+    'The request MUST include a top-level member named "data" which value MUST NOT be null.';
+    public const REQUEST_ERROR_DATA_MEMBER_NOT_ARRAY =
+    'The request MUST include a top-level member named "data" which value MUST NOT be "%s".';
+    public const REQUEST_ERROR_DATA_MEMBER_NOT_SINGLE =
+    'The request MUST include a top-level member named "data" which value MUST be a single object.';
+
+    public const RELATIONSHIP_NO_DATA_MEMBER =
+    'If a relationship is provided in the relationships member of the resource object, ' .
+    'its value MUST be a relationship object with a data member. ';
+    public const REQUEST_ERROR_DATA_MEMBER_NOT_COLLECTION =
+    'The request MUST include a top-level member named "data" which value MUST be a collection of objects.';
 }

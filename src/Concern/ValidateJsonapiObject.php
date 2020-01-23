@@ -20,9 +20,9 @@ trait ValidateJsonapiObject
      * 2) asserts that the jsonapi object contains only the following allowed members : "version" and "meta"
      * (@see containsOnlyAllowedMembers).
      *
-     * Optionaly, if presents, it will checks :
+     * Optionaly, if presents, it will :
      * 3) asserts that the version member is a string.
-     * 4) asserts that meta member is valid (@see isValidMetaObject).
+     * 4) asserts that meta member is valid (@see validateMetaObject).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -31,22 +31,17 @@ trait ValidateJsonapiObject
      */
     public function validateJsonapiObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects(
-            $json,
-            Messages::OBJECT_NOT_ARRAY
-        );
+        $this->isNotArrayOfObjects($json, false, Messages::OBJECT_NOT_ARRAY, 403);
 
-        $allowed = [
-            Members::JSONAPI_VERSION,
-            Members::META
-        ];
         $this->containsOnlyAllowedMembers(
-            $allowed,
+            $this->getRule('JsonapiObject.Allowed'),
             $json
         );
 
-        if (\array_key_exists(Members::JSONAPI_VERSION, $json) && !\is_string($json[Members::JSONAPI_VERSION])) {
-            $this->throw(Messages::JSONAPI_VERSION_IS_NOT_STRING, 400);
+        if (\array_key_exists(Members::JSONAPI_VERSION, $json)) {
+            if (!\is_string($json[Members::JSONAPI_VERSION])) {
+                $this->throw(Messages::JSONAPI_VERSION_IS_NOT_STRING, 403);
+            }
         }
 
         if (\array_key_exists(Members::META, $json)) {

@@ -26,9 +26,9 @@ class MemberName extends Constraint
     /**
      * Returns a string representation of the constraint.
      */
-    public function toString(): string
+    public function default(): string
     {
-        return 'Member name is not valid.';
+        return Messages::MEMBER_NAME_NOT_VALID;
     }
 
     /**

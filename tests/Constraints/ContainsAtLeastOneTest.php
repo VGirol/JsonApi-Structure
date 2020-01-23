@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Constraints;
 
 use VGirol\JsonApiStructure\Constraint\ContainsAtLeastOne;
@@ -67,7 +65,7 @@ class ContainsAtLeastOneTest extends TestCase
 
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage($constraint->toString());
-        $this->expectExceptionCode(400);
+        $this->expectExceptionCode(403);
 
         $constraint->evaluate($json);
     }

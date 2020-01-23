@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -49,9 +46,9 @@ class ValidateLinksObjectTest extends TestCase
      * @test
      * @dataProvider notValidLinkObjectProvider
      */
-    public function linkObjectIsNotValid($json, $strict, $failureMessage)
+    public function linkObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService)->validateLinkObject($json, $strict);
     }
 
@@ -61,14 +58,16 @@ class ValidateLinksObjectTest extends TestCase
             'not an array' => [
                 666,
                 false,
-                Messages::LINK_OBJECT_IS_NOT_ARRAY
+                Messages::LINK_OBJECT_IS_NOT_ARRAY,
+                403
             ],
             'no "href" member' => [
                 [
                     Members::META => 'error'
                 ],
                 false,
-                Messages::LINK_OBJECT_MISS_HREF_MEMBER
+                Messages::LINK_OBJECT_MISS_HREF_MEMBER,
+                403
             ],
             'not only allowed members' => [
                 [
@@ -77,7 +76,8 @@ class ValidateLinksObjectTest extends TestCase
                     'test' => 'error'
                 ],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'meta not valid' => [
                 [
@@ -87,7 +87,8 @@ class ValidateLinksObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'meta not safe' => [
                 [
@@ -97,7 +98,8 @@ class ValidateLinksObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }
@@ -122,9 +124,9 @@ class ValidateLinksObjectTest extends TestCase
      * @test
      * @dataProvider notValidLinksObjectProvider
      */
-    public function linksObjectIsNotValid($json, $allowed, $strict, $failureMessage)
+    public function linksObjectIsNotValid($json, $allowed, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateLinksObject($json, $allowed, $strict);
     }
 
@@ -135,7 +137,8 @@ class ValidateLinksObjectTest extends TestCase
                 'error',
                 [Members::LINK_SELF, Members::LINK_RELATED],
                 false,
-                Messages::LINKS_OBJECT_NOT_ARRAY
+                Messages::LINKS_OBJECT_NOT_ARRAY,
+                403
             ],
             'not only allowed members' => [
                 [
@@ -145,7 +148,8 @@ class ValidateLinksObjectTest extends TestCase
                 ],
                 [Members::LINK_SELF, Members::LINK_RELATED],
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'link not valid' => [
                 [
@@ -153,7 +157,8 @@ class ValidateLinksObjectTest extends TestCase
                 ],
                 [Members::LINK_SELF, Members::LINK_RELATED],
                 false,
-                Messages::LINK_OBJECT_IS_NOT_ARRAY
+                Messages::LINK_OBJECT_IS_NOT_ARRAY,
+                403
             ],
             'link has not safe meta member' => [
                 [
@@ -166,7 +171,8 @@ class ValidateLinksObjectTest extends TestCase
                 ],
                 [Members::LINK_SELF, Members::LINK_RELATED],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }

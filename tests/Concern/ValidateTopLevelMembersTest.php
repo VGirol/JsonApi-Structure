@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -47,9 +44,9 @@ class ValidateTopLevelMembersTest extends TestCase
      * @test
      * @dataProvider notValidTopLevelMembersProvider
      */
-    public function documentHasNotValidTopLevelMembers($json, $failureMessage)
+    public function documentHasNotValidTopLevelMembers($json, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateTopLevelMembers($json);
     }
 
@@ -62,7 +59,8 @@ class ValidateTopLevelMembersTest extends TestCase
                         Members::LINK_SELF => 'http://example.com/articles'
                     ]
                 ],
-                sprintf(Messages::TOP_LEVEL_MEMBERS, implode('", "', [Members::DATA, Members::ERRORS, Members::META]))
+                sprintf(Messages::TOP_LEVEL_MEMBERS, implode('", "', [Members::DATA, Members::ERRORS, Members::META])),
+                403
             ],
             'data and error incompatible' => [
                 [
@@ -79,7 +77,8 @@ class ValidateTopLevelMembersTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::TOP_LEVEL_DATA_AND_ERROR
+                Messages::TOP_LEVEL_DATA_AND_ERROR,
+                403
             ],
             'only allowed members' => [
                 [
@@ -92,7 +91,8 @@ class ValidateTopLevelMembersTest extends TestCase
                     ],
                     'anything' => 'not allowed'
                 ],
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'no data but included' => [
                 [
@@ -109,7 +109,8 @@ class ValidateTopLevelMembersTest extends TestCase
                         'anything' => 'ok'
                     ]
                 ],
-                Messages::TOP_LEVEL_DATA_AND_INCLUDED
+                Messages::TOP_LEVEL_DATA_AND_INCLUDED,
+                403
             ]
         ];
     }
