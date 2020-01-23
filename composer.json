@@ -24,8 +24,7 @@
         "phpunit/phpunit" : "^8.0",
         "infection/infection": "^0.14|^0.15"
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "VGirol\\JsonApiStructure\\": "src/"
