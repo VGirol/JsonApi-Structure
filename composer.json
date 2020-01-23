@@ -17,8 +17,8 @@
         }
     ],
     "require": {
-        "php" : "^7.1",
-        "vgirol/jsonapi-constant": "dev-master"
+        "php" : "^7.2",
+        "vgirol/jsonapi-constant": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit" : "^8.0",
