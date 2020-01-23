@@ -17,8 +17,8 @@ trait ValidateResourceObject
      *
      * It will do the following checks :
      * 1) asserts that the provided resource collection is either an empty array or an array of objects
-     * (@see assertIsArrayOfObjects).
-     * 2) asserts that the collection of resources is valid (@see assertIsValidResourceObject).
+     * (@see isArrayOfObjects).
+     * 2) asserts that the collection of resources is valid (@see validateResourceObject).
      *
      * @param array|null $json
      * @param boolean    $strict If true, unsafe characters are not allowed when checking members name.
@@ -33,7 +33,7 @@ trait ValidateResourceObject
         }
 
         if (!\is_array($json)) {
-            $this->throw(Messages::RESOURCE_COLLECTION_NOT_ARRAY, 400);
+            $this->throw(Messages::RESOURCE_COLLECTION_NOT_ARRAY, 403);
         }
 
         if (\count($json) == 0) {
@@ -52,10 +52,10 @@ trait ValidateResourceObject
      *
      * It will do the following checks :
      * 1) asserts that the resource object has valid top-level structure
-     * (@see assertResourceObjectHasValidTopLevelStructure).
+     * (@see validateResourceObjectTopLevelStructure).
      * 2) asserts that the resource object has valid "type" and "id" members
-     * (@see assertResourceIdMember and @see assertResourceTypeMember).
-     * 3) asserts that the resource object has valid fields (@see assertHasValidFields).
+     * (@see validateResourceIdMember and @see validateResourceTypeMember).
+     * 3) asserts that the resource object has valid fields (@see hasValidFields).
      *
      * Optionaly, if presents, it will checks :
      * 4) asserts thats the resource object has valid "attributes" member.
@@ -99,9 +99,9 @@ trait ValidateResourceObject
      * 1) asserts that the resource has an "id" member.
      * 2) asserts that the resource has a "type" member.
      * 3) asserts that the resource contains at least one of the following members :
-     * "attributes", "relationships", "links", "meta" (@see assertContainsAtLeastOneMember).
+     * "attributes", "relationships", "links", "meta" (@see containsAtLeastOneMember).
      * 4) asserts that the resource contains only the following allowed members :
-     * "id", "type", "meta", "attributes", "links", "relationships" (@see assertContainsOnlyAllowedMembers).
+     * "id", "type", "meta", "attributes", "links", "relationships" (@see containsOnlyAllowedMembers).
      *
      * @param array   $resource
      * @param boolean $strict   If true, unsafe characters are not allowed when checking members name.
@@ -112,33 +112,15 @@ trait ValidateResourceObject
     public function validateResourceObjectTopLevelStructure($resource, $strict): void
     {
         if (!\is_array($resource)) {
-            $this->throw(Messages::RESOURCE_IS_NOT_ARRAY, 400);
+            $this->throw(Messages::RESOURCE_IS_NOT_ARRAY, 403);
         }
 
         $this->validateResourceIdMember($resource);
         $this->validateResourceTypeMember($resource, $strict);
 
-        $this->containsAtLeastOneMember(
-            [
-                Members::ATTRIBUTES,
-                Members::RELATIONSHIPS,
-                Members::LINKS,
-                Members::META
-            ],
-            $resource
-        );
+        $this->containsAtLeastOneMember($this->getRule('ResourceObject.AtLeast'), $resource);
 
-        $this->containsOnlyAllowedMembers(
-            [
-                Members::ID,
-                Members::TYPE,
-                Members::META,
-                Members::ATTRIBUTES,
-                Members::LINKS,
-                Members::RELATIONSHIPS
-            ],
-            $resource
-        );
+        $this->containsOnlyAllowedMembers($this->getRule('ResourceObject.Allowed'), $resource);
     }
 
     /**
@@ -156,15 +138,19 @@ trait ValidateResourceObject
     public function validateResourceIdMember($resource): void
     {
         if (!\array_key_exists(Members::ID, $resource)) {
-            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_ABSENT, 400);
+            if ($this->isPost()) {
+                return;
+            }
+
+            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_ABSENT, 403);
         }
 
         if (!\is_string($resource[Members::ID])) {
-            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING, 400);
+            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING, 403);
         }
 
         if ($resource[Members::ID] == '') {
-            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_EMPTY, 400);
+            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_EMPTY, 403);
         }
     }
 
@@ -174,7 +160,7 @@ trait ValidateResourceObject
      * It will do the following checks :
      * 1) asserts that the "type" member is not empty.
      * 2) asserts that the "type" member is a string.
-     * 3) asserts that the "type" member has a valid value (@see assertIsValidMemberName).
+     * 3) asserts that the "type" member has a valid value (@see validateMemberName).
      *
      * @param array   $resource
      * @param boolean $strict   If true, excludes not safe characters when checking members name
@@ -185,28 +171,25 @@ trait ValidateResourceObject
     public function validateResourceTypeMember($resource, bool $strict): void
     {
         if (!\array_key_exists(Members::TYPE, $resource)) {
-            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT, 400);
+            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_ABSENT, 403);
         }
 
         if (!\is_string($resource[Members::TYPE])) {
-            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING, 400);
+            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING, 403);
         }
 
         if ($resource[Members::TYPE] == '') {
-            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY, 400);
+            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY, 403);
         }
 
-        $this->validateMemberName(
-            $resource[Members::TYPE],
-            $strict
-        );
+        $this->validateMemberName($resource[Members::TYPE], $strict);
     }
 
     /**
      * Asserts that a json fragment is a valid resource links object.
      *
      * It will do the following checks :
-     * 1) asserts that le links object is valid (@see assertIsValidLinksObject) with only "self" member allowed.
+     * 1) asserts that le links object is valid (@see validateLinksObject) with only "self" member allowed.
      *
      * @param array   $json
      * @param boolean $strict If true, excludes not safe characters when checking members name
@@ -216,13 +199,7 @@ trait ValidateResourceObject
      */
     public function validateResourceLinksObject($json, bool $strict): void
     {
-        $this->validateLinksObject(
-            $json,
-            [
-                Members::LINK_SELF
-            ],
-            $strict
-        );
+        $this->validateLinksObject($json, $this->getRule('ResourceObject.LinksObject.Allowed'), $strict);
     }
 
     /**
@@ -230,7 +207,7 @@ trait ValidateResourceObject
      *
      * It will do the following checks :
      * 1) asserts that each attributes member and each relationship name is valid
-     * (@see assertIsNotForbiddenResourceFieldName)
+     * (@see isNotForbiddenResourceFieldName)
      *
      * @param array $resource
      *
@@ -252,7 +229,7 @@ trait ValidateResourceObject
                 if (\array_key_exists(Members::ATTRIBUTES, $resource)
                     && \array_key_exists($name, $resource[Members::ATTRIBUTES])
                 ) {
-                    $this->throw(Messages::FIELDS_HAVE_SAME_NAME, 400);
+                    $this->throw(Messages::FIELDS_HAVE_SAME_NAME, 403);
                 }
             }
         }
@@ -268,12 +245,8 @@ trait ValidateResourceObject
      */
     public function isNotForbiddenResourceFieldName(string $name): void
     {
-        $forbidden = [
-            Members::TYPE,
-            Members::ID
-        ];
-        if (\in_array($name, $forbidden)) {
-            $this->throw(Messages::FIELDS_NAME_NOT_ALLOWED, 400);
+        if (\in_array($name, $this->getRule('ResourceObject.FieldName.Forbidden'))) {
+            $this->throw(Messages::FIELDS_NAME_NOT_ALLOWED, 403);
         }
     }
 }

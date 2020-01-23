@@ -21,10 +21,13 @@ trait ValidateMembers
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function hasMember(string $expected, array $json): void
+    public function hasMember($expected, $json): void
     {
+        $this->isValidArgument(1, 'string', $expected);
+        $this->isValidArgument(2, 'array', $json);
+
         if (!\array_key_exists($expected, $json)) {
-            $this->throw(sprintf(Messages::HAS_MEMBER, $expected), 400);
+            $this->throw(sprintf(Messages::HAS_MEMBER, $expected), 403);
         }
     }
 
@@ -37,8 +40,10 @@ trait ValidateMembers
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function hasMembers(array $expected, array $json): void
+    public function hasMembers($expected, $json): void
     {
+        $this->isValidArgument(1, 'array', $expected);
+
         foreach ($expected as $key) {
             $this->hasMember($key, $json);
         }
@@ -53,10 +58,13 @@ trait ValidateMembers
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function hasOnlyMembers(array $expected, array $json): void
+    public function hasOnlyMembers($expected, $json): void
     {
+        $this->isValidArgument(1, 'array', $expected);
+        $this->isValidArgument(2, 'array', $json);
+
         if (\array_keys($json) != $expected) {
-            $this->throw(sprintf(Messages::HAS_ONLY_MEMBERS, implode(', ', $expected)), 400);
+            $this->throw(sprintf(Messages::HAS_ONLY_MEMBERS, implode(', ', $expected)), 403);
         }
     }
 
@@ -69,10 +77,13 @@ trait ValidateMembers
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function notHasMember(string $expected, array $json): void
+    public function notHasMember($expected, $json): void
     {
+        $this->isValidArgument(1, 'string', $expected);
+        $this->isValidArgument(2, 'array', $json);
+
         if (\array_key_exists($expected, $json)) {
-            $this->throw(sprintf(Messages::NOT_HAS_MEMBER, $expected), 400);
+            $this->throw(sprintf(Messages::NOT_HAS_MEMBER, $expected), 403);
         }
     }
 
@@ -85,8 +96,10 @@ trait ValidateMembers
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function notHasMembers(array $expected, array $json): void
+    public function notHasMembers($expected, $json): void
     {
+        $this->isValidArgument(1, 'array', $expected);
+
         foreach ($expected as $key) {
             $this->notHasMember($key, $json);
         }

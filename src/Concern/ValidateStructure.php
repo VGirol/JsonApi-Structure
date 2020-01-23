@@ -16,15 +16,15 @@ trait ValidateStructure
      * Asserts that a json document has valid structure.
      *
      * It will do the following checks :
-     * 1) checks top-level members (@see assertHasValidTopLevelMembers)
+     * 1) checks top-level members (@see hasValidTopLevelMembers)
      *
      * Optionaly, if presents, it will checks :
-     * 2) primary data (@see assertIsValidPrimaryData)
-     * 3) errors object (@see assertIsValidErrorsObject)
-     * 4) meta object (@see assertIsValidMetaObject)
-     * 5) jsonapi object (@see assertIsValidJsonapiObject)
-     * 6) top-level links object (@see assertIsValidTopLevelLinksMember)
-     * 7) included object (@see assertIsValidIncludedCollection)
+     * 2) primary data (@see validatePrimaryData)
+     * 3) errors object (@see validateErrorsObject)
+     * 4) meta object (@see validateMetaObject)
+     * 5) jsonapi object (@see validateJsonapiObject)
+     * 6) top-level links object (@see validateTopLevelLinksMember)
+     * 7) included object (@see validateIncludedCollection)
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -57,7 +57,8 @@ trait ValidateStructure
         }
 
         if (\array_key_exists(Members::LINKS, $json)) {
-            $this->validateTopLevelLinksMember($json[Members::LINKS], $strict);
+            $withPagination = $this->canBePaginated($json);
+            $this->validateTopLevelLinksMember($json[Members::LINKS], $withPagination, $strict);
         }
     }
 
@@ -66,10 +67,10 @@ trait ValidateStructure
      *
      * It will do the following checks :
      * 1) asserts that the json document contains at least one of the following top-level members :
-     * "data", "meta" or "errors" (@see assertContainsAtLeastOneMember).
+     * "data", "meta" or "errors" (@see containsAtLeastOneMember).
      * 2) asserts that the members "data" and "errors" does not coexist in the same document.
      * 3) asserts that the json document contains only the following members :
-     * "data", "errors", "meta", "jsonapi", "links", "included" (@see assertContainsOnlyAllowedMembers).
+     * "data", "errors", "meta", "jsonapi", "links", "included" (@see containsOnlyAllowedMembers).
      * 4) if the json document does not contain a top-level "data" member, the "included" member must not
      * be present either.
 
@@ -80,62 +81,30 @@ trait ValidateStructure
      */
     public function validateTopLevelMembers(array $json)
     {
-        $expected = [
-            Members::DATA,
-            Members::ERRORS,
-            Members::META
-        ];
+        $expected = $this->getRule('Document.AtLeast');
         $this->containsAtLeastOneMember(
             $expected,
             $json,
             \sprintf(Messages::TOP_LEVEL_MEMBERS, implode('", "', $expected)),
             false,
-            400
+            403
         );
 
-        if (array_key_exists(Members::DATA, $json) && array_key_exists(Members::ERRORS, $json)) {
-            $this->throw(Messages::TOP_LEVEL_DATA_AND_ERROR, 400);
+        if (\array_key_exists(Members::DATA, $json) && \array_key_exists(Members::ERRORS, $json)) {
+            $this->throw(Messages::TOP_LEVEL_DATA_AND_ERROR, 403);
         }
 
-        $allowed = [
-            Members::DATA,
-            Members::ERRORS,
-            Members::META,
-            Members::JSONAPI,
-            Members::LINKS,
-            Members::INCLUDED
-        ];
+        $allowed = $this->getRule('Document.Allowed');
         $this->containsOnlyAllowedMembers($allowed, $json);
 
-        if (!array_key_exists(Members::DATA, $json) && array_key_exists(Members::INCLUDED, $json)) {
-            $this->throw(Messages::TOP_LEVEL_DATA_AND_INCLUDED, 400);
+        if (!\array_key_exists(Members::DATA, $json)) {
+            if (\array_key_exists(Members::INCLUDED, $json)) {
+                $this->throw(Messages::TOP_LEVEL_DATA_AND_INCLUDED, 403);
+            }
+            if (!$this->isAutomatic() && $this->dataIsRequired()) {
+                $this->throw(Messages::REQUEST_ERROR_NO_DATA_MEMBER, 403);
+            }
         }
-    }
-
-    /**
-     * Asserts that a json fragment is a valid top-level links member.
-     *
-     * It will do the following checks :
-     * 1) asserts that the top-level "links" member contains only the following allowed members :
-     * "self", "related", "first", "last", "next", "prev" (@see assertIsValidLinksObject).
-     *
-     * @param array   $json
-     * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
-     *
-     * @return void
-     * @throws \VGirol\JsonApiStructure\Exception\ValidationException
-     */
-    public function validateTopLevelLinksMember($json, bool $strict): void
-    {
-        $allowed = [
-            Members::LINK_SELF,
-            Members::LINK_RELATED,
-            Members::LINK_PAGINATION_FIRST,
-            Members::LINK_PAGINATION_LAST,
-            Members::LINK_PAGINATION_NEXT,
-            Members::LINK_PAGINATION_PREV
-        ];
-        $this->validateLinksObject($json, $allowed, $strict);
     }
 
     /**
@@ -144,7 +113,7 @@ trait ValidateStructure
      * It will do the following checks :
      * 1) asserts that the primary data is either an object, an array of objects or the `null` value.
      * 2) if the primary data is not null, checks if it is a valid single resource or a valid resource collection
-     * (@see assertIsValidResourceObject or @see assertIsValidResourceIdentifierObject).
+     * (@see validateResourceObject or @see validateResourceIdentifierObject).
      *
      * @param array|null $json
      * @param boolean    $strict If true, unsafe characters are not allowed when checking members name.
@@ -155,22 +124,41 @@ trait ValidateStructure
     public function validatePrimaryData($json, bool $strict): void
     {
         if ($json === null) {
+            if (!$this->isAutomatic() && !($this->isRelationshipRoute() && $this->isToOne())) {
+                $this->throw(Messages::REQUEST_ERROR_DATA_MEMBER_NULL, 403);
+            }
             return;
         }
 
-        if (!is_array($json)) {
-            $this->throw(Messages::PRIMARY_DATA_NOT_ARRAY, 400);
+        if (!\is_array($json)) {
+            $this->throw(sprintf(Messages::REQUEST_ERROR_DATA_MEMBER_NOT_ARRAY, gettype($json)), 403);
         }
 
         if (\count($json) == 0) {
+            if (!$this->isAutomatic() && !($this->isRelationshipRoute() && $this->isToMany())
+                || ($this->isRelationshipRoute() && $this->isToMany() && ($this->isPost() || $this->isDelete()))) {
+                $this->throw(
+                    $this->isCollection() ?  Messages::REQUEST_ERROR_DATA_MEMBER_NOT_COLLECTION :
+                        Messages::REQUEST_ERROR_DATA_MEMBER_NOT_SINGLE,
+                    403
+                );
+            }
             return;
         }
 
-        if ($this->isArrayOfObjects($json, '', true)) {
+        if ($this->isArrayOfObjects($json, true)) {
+            if (!$this->isAutomatic() && $this->isSingle()) {
+                $this->throw(Messages::REQUEST_ERROR_DATA_MEMBER_NOT_SINGLE, 403);
+            }
+
             // Resource collection (Resource Objects or Resource Identifier Objects)
             $this->validatePrimaryCollection($json, true, $strict);
 
             return;
+        }
+
+        if (!$this->isAutomatic() && $this->isCollection()) {
+            $this->throw(Messages::REQUEST_ERROR_DATA_MEMBER_NOT_COLLECTION, 403);
         }
 
         // Single Resource (Resource Object or Resource Identifier Object)
@@ -178,11 +166,35 @@ trait ValidateStructure
     }
 
     /**
+     * Asserts that a json fragment is a valid top-level links member.
+     *
+     * It will do the following checks :
+     * 1) asserts that the top-level "links" member contains only the following allowed members :
+     * "self", "related" and optionaly pagination links (@see validateLinksObject).
+     *
+     * @param array   $json
+     * @param boolean $withPagination
+     * @param boolean $strict         If true, unsafe characters are not allowed when checking members name.
+     *
+     * @return void
+     * @throws \VGirol\JsonApiStructure\Exception\ValidationException
+     */
+    public function validateTopLevelLinksMember($json, bool $withPagination, bool $strict): void
+    {
+        $this->canBePaginated($json);
+        $allowed = $this->getRule('Document.LinksObject.Allowed');
+        if ($withPagination) {
+            $allowed = array_merge($allowed, $this->getRule('LinksObject.Pagination'));
+        }
+        $this->validateLinksObject($json, $allowed, $strict);
+    }
+
+    /**
      * Asserts that a collection of included resources is valid.
      *
      * It will do the following checks :
-     * 1) asserts that it is an array of objects (@see assertIsArrayOfObjects).
-     * 2) asserts that each resource of the collection is valid (@see assertIsValidResourceObject).
+     * 1) asserts that it is an array of objects (@see isArrayOfObjects).
+     * 2) asserts that each resource of the collection is valid (@see validateResourceObject).
      * 3) asserts that each resource in the collection corresponds to an existing resource linkage
      * present in either primary data, primary data relationships or another included resource.
      * 4) asserts that each resource in the collection is unique (i.e. each couple id-type is unique).
@@ -198,7 +210,7 @@ trait ValidateStructure
     {
         $this->validateResourceObjectCollection($included, $strict);
 
-        $resIdentifiers = array_merge(
+        $resIdentifiers = \array_merge(
             $this->getAllResourceIdentifierObjects($data),
             $this->getAllResourceIdentifierObjects($included)
         );
@@ -206,14 +218,14 @@ trait ValidateStructure
         $present = [];
         foreach ($included as $inc) {
             if (!$this->existsInArray($inc, $resIdentifiers)) {
-                $this->throw(Messages::INCLUDED_RESOURCE_NOT_LINKED, 400);
+                $this->throw(Messages::INCLUDED_RESOURCE_NOT_LINKED, 403);
             }
 
             if (!\array_key_exists($inc[Members::TYPE], $present)) {
                 $present[$inc[Members::TYPE]] = [];
             }
             if (\in_array($inc[Members::ID], $present[$inc[Members::TYPE]])) {
-                $this->throw(Messages::COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE, 400);
+                $this->throw(Messages::COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE, 403);
             }
 
             \array_push($present[$inc[Members::TYPE]], $inc[Members::ID]);
@@ -241,7 +253,7 @@ trait ValidateStructure
                 }
 
                 if ($isResourceObject !== $this->dataIsResourceObject($resource)) {
-                    $this->throw(Messages::PRIMARY_DATA_SAME_TYPE, 400);
+                    $this->throw(Messages::PRIMARY_DATA_SAME_TYPE, 403);
                 }
             }
 
@@ -261,7 +273,10 @@ trait ValidateStructure
      */
     private function validatePrimarySingle($resource, bool $strict): void
     {
-        if ($this->dataIsResourceObject($resource)) {
+        $isResourceObject = $this->isAutomatic() ?
+            $this->dataIsResourceObject($resource) :
+            !$this->isRelationshipRoute();
+        if ($isResourceObject) {
             $this->validateResourceObject($resource, $strict);
 
             return;
@@ -301,7 +316,7 @@ trait ValidateStructure
         if (\count($data) == 0) {
             return $arr;
         }
-        if (!$this->isArrayOfObjects($data, '', true)) {
+        if (!$this->isArrayOfObjects($data, true)) {
             $data = [$data];
         }
         foreach ($data as $obj) {
@@ -314,7 +329,7 @@ trait ValidateStructure
                 }
                 $arr = \array_merge(
                     $arr,
-                    $this->isArrayOfObjects($relationship[Members::DATA], '', true) ?
+                    $this->isArrayOfObjects($relationship[Members::DATA], true) ?
                         $relationship[Members::DATA] : [$relationship[Members::DATA]]
                 );
             }

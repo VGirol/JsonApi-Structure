@@ -14,14 +14,18 @@ trait ValidateArrays
     /**
      * Validate that an array is an array of objects.
      *
-     * @param array  $json
-     * @param string $message An optional message to explain why the test failed
+     * @param array       $json
+     * @param bool        $returnValue
+     * @param string|null $message     An optional message to explain why the test failed
+     * @param mixed       $code
      *
      * @return bool
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function isArrayOfObjects(array $json, string $message = '', $returnValue = false): bool
+    public function isArrayOfObjects($json, bool $returnValue = false, ?string $message = '', $code = 403): bool
     {
+        $this->isValidArgument(1, 'array', $json);
+
         if (\count($json) == 0) {
             return true;
         }
@@ -29,8 +33,7 @@ trait ValidateArrays
         $result = !$this->arrayIsAssociative($json);
 
         if (!$result && !$returnValue) {
-            $message = $message ?: Messages::MUST_BE_ARRAY_OF_OBJECTS;
-            $this->throw($message, 400);
+            $this->throw($message ?: Messages::MUST_BE_ARRAY_OF_OBJECTS, $code);
         }
 
         return $result;
@@ -40,13 +43,17 @@ trait ValidateArrays
      * Validate that an array is not an array of objects.
      *
      * @param array  $json
-     * @param string $message An optional message to explain why the test failed
+     * @param bool   $returnValue
+     * @param string $message     An optional message to explain why the test failed
+     * @param mixed  $code
      *
      * @return bool
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function isNotArrayOfObjects(array $json, string $message = '', $returnValue = false): bool
+    public function isNotArrayOfObjects($json, bool $returnValue = false, string $message = '', $code = 403): bool
     {
+        $this->isValidArgument(1, 'array', $json);
+
         if (\count($json) == 0) {
             return true;
         }
@@ -54,8 +61,7 @@ trait ValidateArrays
         $result = $this->arrayIsAssociative($json);
 
         if (!$result && !$returnValue) {
-            $message = $message ?: Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS;
-            $this->throw($message, 400);
+            $this->throw($message ?: Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS, $code);
         }
 
         return $result;

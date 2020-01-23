@@ -18,7 +18,20 @@ abstract class Constraint
     /**
      * Returns a string representation of the constraint.
      */
-    abstract public function toString(): string;
+    abstract public function default(): string;
+
+    /**
+     * Returns a string representation of the constraint.
+     */
+    public function toString(): string
+    {
+        $failureMessage = $this->default();
+        if ($this->failureMessage) {
+            $failureMessage .= "\n" . $this->failureMessage;
+        }
+
+        return $failureMessage;
+    }
 
     /**
      * Evaluates the constraint for parameter $other
@@ -33,7 +46,7 @@ abstract class Constraint
      * @return bool
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function evaluate($inspected, string $description = '', bool $returnResult = false, $code = 400): bool
+    public function evaluate($inspected, string $description = '', bool $returnResult = false, $code = 403): bool
     {
         $success = $this->handle($inspected);
 
@@ -42,7 +55,7 @@ abstract class Constraint
         }
 
         if (!$success) {
-            $this->fail($inspected, $description, $code);
+            $this->fail($description, $code);
         }
 
         return true;
@@ -72,18 +85,14 @@ abstract class Constraint
     /**
      * Undocumented function
      *
-     * @param mixed  $inspected
      * @param string $description
      * @param mixed  $code
      *
      * @return void
      */
-    private function fail($inspected, string $description, $code)
+    private function fail(string $description, $code)
     {
         $failureMessage = $this->toString();
-        if ($this->failureMessage) {
-            $failureMessage .= "\n" . $this->failureMessage;
-        }
         if ($description) {
             $failureMessage .= "\n" . $description;
         }

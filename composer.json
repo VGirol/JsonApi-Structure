@@ -33,8 +33,7 @@
             }
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "VGirol\\JsonApiStructure\\": "src/"

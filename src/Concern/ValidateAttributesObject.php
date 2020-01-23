@@ -16,9 +16,9 @@ trait ValidateAttributesObject
      * Asserts that a json fragment is a valid attributes object.
      *
      * It will do the following checks :
-     * 1) asserts that attributes object is not an array of objects (@see assertIsNotArrayOfObjects).
-     * 2) asserts that attributes object has no member with forbidden name (@see assertFieldHasNoForbiddenMemberName).
-     * 3) asserts that each member name of the attributes object is valid (@see assertIsValidMemberName).
+     * 1) asserts that attributes object is not an array of objects (@see isNotArrayOfObjects).
+     * 2) asserts that attributes object has no member with forbidden name (@see fieldHasNoForbiddenMemberName).
+     * 3) asserts that each member name of the attributes object is valid (@see validateMemberName).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -26,11 +26,9 @@ trait ValidateAttributesObject
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function validateAttributesObject(array $json, bool $strict): void
+    public function validateAttributesObject($json, bool $strict): void
     {
-        if (!$this->isNotArrayOfObjects($json, '', true)) {
-            $this->throw(Messages::ATTRIBUTES_OBJECT_IS_NOT_ARRAY, 400);
-        }
+        $this->isNotArrayOfObjects($json, false, Messages::ATTRIBUTES_OBJECT_IS_NOT_ARRAY, 403);
 
         $this->fieldHasNoForbiddenMemberName($json);
 
@@ -46,7 +44,7 @@ trait ValidateAttributesObject
      * has no forbidden member name.
      *
      * It will do the following checks :
-     * 1) asserts that each member name of the field is not a forbidden name (@see assertIsNotForbiddenMemberName).
+     * 1) asserts that each member name of the field is not a forbidden name (@see isNotForbiddenMemberName).
      * 2) if the field has nested objects, it will checks each all.
      *
      * @param mixed $field
@@ -78,14 +76,12 @@ trait ValidateAttributesObject
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function isNotForbiddenMemberName(string $name): void
+    public function isNotForbiddenMemberName($name): void
     {
-        $forbidden = [
-            Members::RELATIONSHIPS,
-            Members::LINKS
-        ];
-        if (\in_array($name, $forbidden)) {
-            $this->throw(Messages::MEMBER_NAME_NOT_ALLOWED, 400);
+        $this->isValidArgument(1, 'string', $name);
+
+        if (\in_array($name, $this->getRule('MemberName.Forbidden'))) {
+            $this->throw(Messages::MEMBER_NAME_NOT_ALLOWED, 403);
         }
     }
 }

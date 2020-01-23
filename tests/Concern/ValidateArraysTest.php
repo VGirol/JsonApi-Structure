@@ -1,11 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Asserts\Structure;
 
-use TypeError;
-use VGirol\JsonApiStructure\Exception\ValidationException;
+use PHPUnit\Framework\Assert as PHPUnit;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -18,9 +15,9 @@ class ValidateArraysTest extends TestCase
      */
     public function isArrayOfObjects($json)
     {
-        (new ValidateService())->isArrayOfObjects($json);
+        $result = (new ValidateService())->isArrayOfObjects($json);
 
-        $this->succeed();
+        PHPUnit::assertTrue($result);
     }
 
     public function arrayOfObjectsProvider()
@@ -44,33 +41,36 @@ class ValidateArraysTest extends TestCase
 
     /**
      * @test
+     */
+    public function isArrayOfObjectsInvalidArgument()
+    {
+        $data = 'wrong';
+
+        $this->setInvalidArgumentException(1, 'array', $data);
+        (new ValidateService())->isArrayOfObjects($data);
+    }
+
+    /**
+     * @test
      * @dataProvider isArrayOfObjectsFailedProvider
      */
-    public function isArrayOfObjectsFailed($data, $message, $exceptionClass, $failureMessage, $code)
+    public function isArrayOfObjectsFailed($data, $message, $failureMessage, $code)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
-        (new ValidateService())->isArrayOfObjects($data, $message);
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->isArrayOfObjects($data, false, $message, $code);
     }
 
     public function isArrayOfObjectsFailedProvider()
     {
         return [
-            'not an array' => [
-                'wrong',
-                '',
-                TypeError::class,
-                null,
-                null
-            ],
             'associative array' => [
                 [
                     'key1' => 'value1',
                     'key2' => 'value2'
                 ],
                 '',
-                ValidationException::class,
                 Messages::MUST_BE_ARRAY_OF_OBJECTS,
-                400
+                403
             ],
             'customized message' => [
                 [
@@ -78,9 +78,8 @@ class ValidateArraysTest extends TestCase
                     'key2' => 'value2'
                 ],
                 'customized message',
-                ValidationException::class,
                 'customized message',
-                400
+                403
             ]
         ];
     }
@@ -91,9 +90,9 @@ class ValidateArraysTest extends TestCase
      */
     public function isNotArrayOfObjects($json)
     {
-        (new ValidateService())->isNotArrayOfObjects($json);
+        $result = (new ValidateService())->isNotArrayOfObjects($json);
 
-        $this->succeed();
+        PHPUnit::assertTrue($result);
     }
 
     public function notArrayOfObjectsProvider()
@@ -113,39 +112,33 @@ class ValidateArraysTest extends TestCase
 
     /**
      * @test
-     * @dataProvider isNotArrayOfObjectsFailedProvider
      */
-    public function isNotArrayOfObjectsFailed($data, $message, $exceptionClass, $failureMessage, $code)
+    public function isNotArrayOfObjectsInvalidArgument()
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $data = 'wrong';
 
-        (new ValidateService())->isNotArrayOfObjects($data, $message);
+        $this->setInvalidArgumentException(1, 'array', $data);
+        (new ValidateService())->isNotArrayOfObjects($data);
     }
 
-    public function isNotArrayOfObjectsFailedProvider()
+    /**
+     * @test
+     */
+    public function isNotArrayOfObjectsFailed()
     {
-        return [
-            'not an array' => [
-                'wrong',
-                '',
-                TypeError::class,
-                null,
-                null
+        $data = [
+            [
+                'key1' => 'value1',
             ],
-            'array of objects' => [
-                [
-                    [
-                        'key1' => 'value1',
-                    ],
-                    [
-                        'key2' => 'value2'
-                    ]
-                ],
-                '',
-                ValidationException::class,
-                Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS,
-                400
+            [
+                'key2' => 'value2'
             ]
         ];
+        $failureMessage = Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS;
+        $code = 403;
+
+        $this->setFailure($failureMessage, $code);
+
+        (new ValidateService())->isNotArrayOfObjects($data);
     }
 }

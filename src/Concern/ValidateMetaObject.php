@@ -12,11 +12,11 @@ use VGirol\JsonApiStructure\Messages;
 trait ValidateMetaObject
 {
     /**
-     * Validates that a json fragment is a valid meta object.
+     * Assert that a json fragment is a valid meta object.
      *
      * It will do the following checks :
      * 1) validates that the meta object is not an array of objects (@see isNotArrayOfObjects).
-     * 2) validates that each member of the meta object is valid (@see isValidMemberName).
+     * 2) validates that each member of the meta object is valid (@see validateMemberName).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -26,10 +26,7 @@ trait ValidateMetaObject
      */
     public function validateMetaObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects(
-            $json,
-            Messages::META_OBJECT_IS_NOT_ARRAY
-        );
+        $this->isNotArrayOfObjects($json, false, Messages::META_OBJECT_IS_NOT_ARRAY, 403);
 
         foreach (array_keys($json) as $key) {
             $this->validateMemberName($key, $strict);

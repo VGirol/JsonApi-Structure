@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VGirol\JsonApiStructure\Concern;
 
 use VGirol\JsonApiConstant\Members;
+use VGirol\JsonApiStructure\Messages;
 
 /**
  * Assertions relating to the relationships object
@@ -15,9 +16,9 @@ trait ValidateRelationshipsObject
      * Asserts that a json fragment is a valid relationships object.
      *
      * It will do the following checks :
-     * 1) asserts that the relationships object is not an array of objects (@see assertIsNotArrayOfObjects).
-     * 2) asserts that each relationship of the collection has a valid name (@see assertIsValidMemberName)
-     * and is a valid relationship object (@see assertIsValidRelationshipObject).
+     * 1) asserts that the relationships object is not an array of objects (@see aisNotArrayOfObjects).
+     * 2) asserts that each relationship of the collection has a valid name (@see validateMemberName)
+     * and is a valid relationship object (@see validateRelationshipObject).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -40,12 +41,12 @@ trait ValidateRelationshipsObject
      *
      * It will do the following checks :
      * 1) asserts that the relationship object contains at least one of the following member : "links", "data", "meta"
-     * (@see assertContainsAtLeastOneMember).
+     * (@see containsAtLeastOneMember).
      *
      * Optionaly, if presents, it will checks :
-     * 2) asserts that the data member is valid (@see assertIsValidResourceLinkage).
-     * 3) asserts that the links member is valid (@see assertIsValidRelationshipLinksObject).
-     * 4) asserts that the meta object is valid (@see assertIsValidMetaObject).
+     * 2) asserts that the data member is valid (@see validateResourceLinkage).
+     * 3) asserts that the links member is valid (@see validateRelationshipLinksObject).
+     * 4) asserts that the meta object is valid (@see validateMetaObject).
      *
      * @param array   $json
      * @param boolean $strict If true, unsafe characters are not allowed when checking members name.
@@ -53,16 +54,20 @@ trait ValidateRelationshipsObject
      * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function validateRelationshipObject(array $json, bool $strict): void
+    public function validateRelationshipObject($json, bool $strict): void
     {
+        $this->isValidArgument(1, 'array', $json);
+
         $this->containsAtLeastOneMember(
-            [
-                Members::LINKS,
-                Members::DATA,
-                Members::META
-            ],
+            $this->getRule('RelationshipObject.AtLeast'),
             $json
         );
+
+        if (!$this->isAutomatic() && ($this->isPost() || $this->isUpdate())
+            && !\array_key_exists(Members::DATA, $json)
+        ) {
+            $this->throw(Messages::RELATIONSHIP_NO_DATA_MEMBER, 403);
+        }
 
         if (\array_key_exists(Members::DATA, $json)) {
             $data = $json[Members::DATA];
@@ -71,8 +76,7 @@ trait ValidateRelationshipsObject
 
         if (\array_key_exists(Members::LINKS, $json)) {
             $links = $json[Members::LINKS];
-            $withPagination = \array_key_exists(Members::DATA, $json)
-                && $this->isArrayOfObjects($json[Members::DATA], '', true);
+            $withPagination = $this->canBePaginated($json);
             $this->validateRelationshipLinksObject($links, $withPagination, $strict);
         }
 
@@ -98,20 +102,9 @@ trait ValidateRelationshipsObject
      */
     public function validateRelationshipLinksObject($json, bool $withPagination, bool $strict): void
     {
-        $allowed = [
-            Members::LINK_SELF,
-            Members::LINK_RELATED
-        ];
+        $allowed = $this->getRule('Document.LinksObject.Allowed');
         if ($withPagination) {
-            $allowed = array_merge(
-                $allowed,
-                [
-                    Members::LINK_PAGINATION_FIRST,
-                    Members::LINK_PAGINATION_LAST,
-                    Members::LINK_PAGINATION_NEXT,
-                    Members::LINK_PAGINATION_PREV
-                ]
-            );
+            $allowed = array_merge($allowed, $this->getRule('LinksObject.Pagination'));
         }
         $this->validateLinksObject($json, $allowed, $strict);
     }

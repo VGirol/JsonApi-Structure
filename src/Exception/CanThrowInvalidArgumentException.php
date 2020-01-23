@@ -17,7 +17,7 @@ trait CanThrowInvalidArgumentException
      * @param mixed   $value
      *
      * @return void
-     * @throws \VGirol\JsonApiAssert\InvalidArgumentException
+     * @throws \VGirol\JsonApiStructure\Exception\InvalidArgumentException
      *
      * @SuppressWarnings(PHPMD.StaticAccess)
      */

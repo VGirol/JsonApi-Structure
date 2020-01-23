@@ -1,12 +1,8 @@
 <?php
 
-declare(strict_types=1);
-
 namespace VGirol\JsonApiStructure\Tests\Concern;
 
-use TypeError;
 use VGirol\JsonApiConstant\Members;
-use VGirol\JsonApiStructure\Exception\ValidationException;
 use VGirol\JsonApiStructure\Messages;
 use VGirol\JsonApiStructure\Tests\TestCase;
 use VGirol\JsonApiStructure\ValidateService;
@@ -51,9 +47,9 @@ class ValidateRelationshipsObjectTest extends TestCase
      * @test
      * @dataProvider notValidRelationshipLinksObjectProvider
      */
-    public function relationshipLinksObjectIsNotValid($json, $withPagination, $strict, $failureMessage)
+    public function relationshipLinksObjectIsNotValid($json, $withPagination, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipLinksObject($json, $withPagination, $strict);
     }
 
@@ -67,7 +63,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                 ],
                 false,
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ],
             'with pagination and not allowed member' => [
                 [
@@ -78,7 +75,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                 ],
                 true,
                 false,
-                Messages::ONLY_ALLOWED_MEMBERS
+                Messages::ONLY_ALLOWED_MEMBERS,
+                403
             ]
         ];
     }
@@ -153,24 +151,29 @@ class ValidateRelationshipsObjectTest extends TestCase
 
     /**
      * @test
+     */
+    public function validateRelationshipObjectInvalidArgument()
+    {
+        $json = 'not valid';
+        $strict = false;
+
+        $this->setInvalidArgumentException(1, 'array', $json);
+        (new ValidateService())->validateRelationshipObject($json, $strict);
+    }
+
+    /**
+     * @test
      * @dataProvider notValidRelationshipObjectProvider
      */
-    public function relationshipObjectIsNotValid($json, $strict, $exceptionClass, $failureMessage, $code)
+    public function relationshipObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($exceptionClass, $failureMessage, $code);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipObject($json, $strict);
     }
 
     public function notValidRelationshipObjectProvider()
     {
         return [
-            'not an array' => [
-                'not valid',
-                false,
-                TypeError::class,
-                null,
-                null
-            ],
             'mandatory member miss' => [
                 [
                     'anything' => [
@@ -178,9 +181,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                ValidationException::class,
                 sprintf(Messages::CONTAINS_AT_LEAST_ONE, implode(', ', [Members::LINKS, Members::DATA, Members::META])),
-                400
+                403
             ],
             'meta is not valid' => [
                 [
@@ -193,9 +195,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                ValidationException::class,
                 Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
-                400
+                403
             ],
             'links is not valid' => [
                 [
@@ -206,9 +207,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     Members::LINKS => 'not valid'
                 ],
                 false,
-                ValidationException::class,
                 Messages::LINKS_OBJECT_NOT_ARRAY,
-                400
+                403
             ],
             'single resource with pagination' => [
                 [
@@ -223,9 +223,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                ValidationException::class,
                 Messages::ONLY_ALLOWED_MEMBERS,
-                400
+                403
             ],
             'array of resource identifier objects without pagination' => [
                 [
@@ -247,9 +246,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                ValidationException::class,
                 sprintf(Messages::CONTAINS_AT_LEAST_ONE, implode(', ', [Members::LINKS, Members::DATA, Members::META])),
-                400
+                403
             ]
         ];
     }
@@ -281,9 +279,9 @@ class ValidateRelationshipsObjectTest extends TestCase
      * @test
      * @dataProvider notValidRelationshipsObjectProvider
      */
-    public function relationshipsObjectIsNotValid($json, $strict, $failureMessage)
+    public function relationshipsObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure(ValidationException::class, $failureMessage, 400);
+        $this->setFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipsObject($json, $strict);
     }
 
@@ -296,7 +294,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ['anything' => 'not valid']
                 ],
                 false,
-                Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS
+                Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS,
+                403
             ],
             'no valid member name' => [
                 [
@@ -308,7 +307,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ],
             'no safe member name' => [
                 [
@@ -320,7 +320,8 @@ class ValidateRelationshipsObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS
+                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                403
             ]
         ];
     }
