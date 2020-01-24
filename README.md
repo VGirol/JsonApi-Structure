@@ -8,27 +8,29 @@
 [![Infection MSI][ico-mutation]][link-mutation]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-This is where your description should go. Try and limit it to a paragraph or two, and maybe throw in a mention of what
-PSRs you support to avoid any confusion with users and contributors.
+This package provides a set of tools to check content of a request using the [JSON:API specification](https://jsonapi.org/).
 
-## Structure
+## Technologies
 
-If any of the following are applicable to your project, then the directory structure should follow industry best practices by being named the following.
+- PHP 7.2+
 
+## Installation
+
+To install through composer, simply put the following in your `composer.json` file:
+
+```json
+{
+    "require-dev": {
+        "vgirol/jsonapi-structure": "dev-master"
+    }
+}
 ```
-bin/        
-build/
-docs/
-config/
-src/
-tests/
-vendor/
-```
 
+And then run `composer install` from the terminal.
 
-## Install
+### Quick Installation
 
-Via Composer
+Above installation can also be simplified by using the following command:
 
 ``` bash
 $ composer require vgirol/jsonapi-structure
@@ -37,13 +39,28 @@ $ composer require vgirol/jsonapi-structure
 ## Usage
 
 ``` php
-$skeleton = new VGirol\JsonApi-Structure();
-echo $skeleton->echoPhrase('Hello, League!');
+use VGirol\JsonApiStructure\ValidateService;
+
+$json = [
+    'data' => [
+        'type' => 'resource',
+        'id' => '5'
+    ],
+    'jsonapi' => [
+        'version' => '1.0',
+        'meta' => [
+            'key' => 'value'
+        ]
+    ]
+];
+
+$service = new ValidateService('POST');
+$service->validateStructure($json);
 ```
 
 ## Documentation
 
-The API documentation is available in XHTML format at the url [http://JsonApi-Structure.girol.fr/docs/index.xhtml](http://JsonApi-Structure.girol.fr/docs/index.xhtml).
+The API documentation is available in XHTML format at the url [http://jsonapi-structure.girol.fr/docs/index.xhtml](http://jsonapi-structure.girol.fr/docs/index.xhtml).
 
 ## Change log
 
@@ -77,7 +94,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-travis]: https://img.shields.io/travis/VGirol/JsonApi-Structure/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/VGirol/JsonApi-Structure.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/VGirol/JsonApi-Structure.svg?style=flat-square
-[ico-mutation]: https://badge.stryker-mutator.io/github.com/VGirol/JsonApi-Structure/master
+[ico-mutation]: https://img.shields.io/endpoint?style=flat-square&url=https%3A%2F%2Fbadge-api.stryker-mutator.io%2Fgithub.com%2FVGirol%2FJsonApi-Structure%2Fmaster
 [ico-downloads]: https://img.shields.io/packagist/dt/VGirol/JsonApi-Structure.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/VGirol/JsonApi-Structure
@@ -86,5 +103,5 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [link-code-quality]: https://scrutinizer-ci.com/g/VGirol/JsonApi-Structure
 [link-downloads]: https://packagist.org/packages/VGirol/JsonApi-Structure
 [link-author]: https://github.com/VGirol
-[link-mutation]: https://infection.github.io
+[link-mutation]: https://dashboard.stryker-mutator.io/reports/github.com/VGirol/JsonApi-Structure/master
 [link-contributors]: ../../contributors
