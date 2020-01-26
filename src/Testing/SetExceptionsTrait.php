@@ -107,6 +107,8 @@ trait SetExceptionsTrait
      * @param mixed   $value
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.StaticAccess)
      */
     protected function setInvalidArgumentException(int $arg, string $type, $value = null): void
     {

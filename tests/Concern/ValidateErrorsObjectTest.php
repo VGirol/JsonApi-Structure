@@ -82,7 +82,7 @@ class ValidateErrorsObjectTest extends TestCase
         return [
             'not an array' => [
                 'error',
-                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY,
+                Messages::ERROR_OBJECT_SOURCE_OBJECT_MUST_BE_ARRAY,
                 400
             ],
             'pointer is not a string' => [
@@ -156,13 +156,13 @@ class ValidateErrorsObjectTest extends TestCase
             'not an array' => [
                 'error',
                 false,
-                Messages::ERROR_OBJECT_NOT_ARRAY,
+                Messages::ERROR_OBJECT_MUST_BE_ARRAY,
                 400
             ],
             'empty array' => [
                 [],
                 false,
-                Messages::ERROR_OBJECT_NOT_EMPTY,
+                Messages::ERROR_OBJECT_MUST_NOT_BE_EMPTY,
                 400
             ],
             'not allowed member' => [
@@ -180,7 +180,7 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 666,
                 ],
                 false,
-                Messages::ERROR_STATUS_IS_NOT_STRING,
+                Messages::ERROR_OBJECT_STATUS_MEMBER_MUST_BE_STRING,
                 400
             ],
             'code is not a string' => [
@@ -189,7 +189,7 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_CODE_IS_NOT_STRING,
+                Messages::ERROR_OBJECT_CODE_MEMBER_MUST_BE_STRING,
                 400
             ],
             'title is not a string' => [
@@ -198,7 +198,7 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_TITLE_IS_NOT_STRING,
+                Messages::ERROR_OBJECT_TITLE_MEMBER_MUST_BE_STRING,
                 400
             ],
             'details is not a string' => [
@@ -207,7 +207,7 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_STATUS => 'ok',
                 ],
                 false,
-                Messages::ERROR_DETAILS_IS_NOT_STRING,
+                Messages::ERROR_OBJECT_DETAILS_MEMBER_MUST_BE_STRING,
                 400
             ],
             'source is not an array' => [
@@ -216,7 +216,7 @@ class ValidateErrorsObjectTest extends TestCase
                     Members::ERROR_SOURCE => 'not valid'
                 ],
                 false,
-                Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY,
+                Messages::ERROR_OBJECT_SOURCE_OBJECT_MUST_BE_ARRAY,
                 400
             ],
             'source pointer is not a string' => [
@@ -271,7 +271,7 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ]
         ];
@@ -316,7 +316,7 @@ class ValidateErrorsObjectTest extends TestCase
                     'error' => 'not valid'
                 ],
                 false,
-                Messages::ERRORS_OBJECT_NOT_ARRAY,
+                Messages::ERRORS_OBJECT_MUST_BE_ARRAY,
                 400
             ],
             'error object not valid' => [
@@ -327,7 +327,7 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ERROR_STATUS_IS_NOT_STRING,
+                Messages::ERROR_OBJECT_STATUS_MEMBER_MUST_BE_STRING,
                 400
             ],
             'error object not safe' => [
@@ -340,7 +340,7 @@ class ValidateErrorsObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 400
             ]
         ];

@@ -2,6 +2,9 @@
 
 namespace VGirol\JsonApiStructure\Exception;
 
+/**
+ * Exception for validation
+ */
 class ValidationException extends \Exception
 {
     /**
@@ -9,7 +12,7 @@ class ValidationException extends \Exception
      *
      * @return int
      */
-    public function errorStatus()
+    public function errorStatus(): int
     {
         return $this->getCode();
     }

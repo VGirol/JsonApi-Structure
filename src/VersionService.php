@@ -4,16 +4,34 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure;
 
-require_once 'Versions.php';
+use VGirol\JsonApiConstant\Versions;
 
+/**
+ * Service to manage the version of the specification that is used when validating documents.
+ */
 class VersionService
 {
     use CanUseDotPath;
 
-    private $default = VERSION_1_0;
+    /**
+     * Undocumented variable
+     *
+     * @var string
+     */
+    private $default = Versions::VERSION_1_0;
 
+    /**
+     * Undocumented variable
+     *
+     * @var string
+     */
     private $version;
 
+    /**
+     * Undocumented variable
+     *
+     * @var array
+     */
     private $cache = [];
 
     /**
@@ -53,20 +71,43 @@ class VersionService
         return $this->version;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $path
+     *
+     * @return mixed
+     * @throws \VGirol\JsonApiStructure\Exception\DotPathException
+     */
     public function getRule(string $path)
     {
         return $this->retrieve($path, $this->cache);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return array
+     */
+    protected function getRulesFileContent(): array
+    {
+        return include __DIR__ . '/VersionRules.php';
+    }
+
+    /**
+     * Undocumented function
+     *
+     * @return void
+     */
     private function createCache(): void
     {
-        $rules = include 'VersionRules.php';
+        $rules = $this->getRulesFileContent();
 
         $major = 1;
         $minor = 0;
 
         do {
-            $version = constant("\VGirol\JsonApiStructure\VERSION_{$major}_{$minor}");
+            $version = constant("\\VGirol\\JsonApiConstant\\Versions::VERSION_{$major}_{$minor}");
             if (!\array_key_exists($version, $rules)) {
                 $minor = 0;
                 $major++;

@@ -21,6 +21,9 @@ use VGirol\JsonApiStructure\Constraint\MemberName;
 use VGirol\JsonApiStructure\Exception\CanThrowInvalidArgumentException;
 use VGirol\JsonApiStructure\Exception\ValidationException;
 
+/**
+ * Main class to validate documents uusing the JSON:API specification
+ */
 class ValidateService
 {
     use CanThrowInvalidArgumentException;
@@ -105,16 +108,31 @@ class ValidateService
         return $this;
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isPost(): bool
     {
         return $this->method === 'POST';
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isUpdate(): bool
     {
         return \in_array($this->method, ['PATCH', 'PUT']);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isDelete(): bool
     {
         return $this->method === 'DELETE';
@@ -132,16 +150,31 @@ class ValidateService
         return $this->selectFlag($routeType, [self::ROUTE_MAIN, self::ROUTE_RELATED, self::ROUTE_RELATIONSHIP]);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isMainRoute(): bool
     {
         return $this->isFlagSet(self::ROUTE_MAIN);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isRelatedRoute(): bool
     {
         return $this->isFlagSet(self::ROUTE_RELATED);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     public function isRelationshipRoute(): bool
     {
         return $this->isFlagSet(self::ROUTE_RELATIONSHIP);
@@ -222,67 +255,117 @@ class ValidateService
         return $this->isFlagSet(self::TO_ONE_RELATIONSHIP);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param array   $expected
+     * @param array   $json
+     * @param string  $description
+     * @param integer $code
+     *
+     * @return void
+     */
     public function containsAtLeastOneMember(
         array $expected,
         array $json,
         string $description = '',
-        bool $returnResult = false,
-        $code = 403
-    ): bool {
-        return $this->constraint(
+        int $code = 403
+    ): void {
+        $this->constraint(
             ContainsAtLeastOne::class,
             [$expected],
             $json,
             $description,
-            $returnResult,
             $code
         );
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param array   $allowed
+     * @param array   $json
+     * @param string  $description
+     * @param integer $code
+     *
+     * @return void
+     */
     public function containsOnlyAllowedMembers(
         array $allowed,
         array $json,
         string $description = '',
-        bool $returnResult = false,
-        $code = 403
-    ): bool {
-        return $this->constraint(
+        int $code = 403
+    ): void {
+        $this->constraint(
             ContainsOnlyAllowedMembers::class,
             [$allowed],
             $json,
             $description,
-            $returnResult,
             $code
         );
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string  $name
+     * @param boolean $strict
+     * @param string  $description
+     * @param integer $code
+     *
+     * @return void
+     */
     public function validateMemberName(
         $name,
         bool $strict,
         string $description = '',
-        bool $returnResult = false,
-        $code = 403
-    ): bool {
-        return $this->constraint(
+        int $code = 403
+    ): void {
+        $this->constraint(
             MemberName::class,
             [$strict],
             $name,
             $description,
-            $returnResult,
             $code
         );
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $path
+     *
+     * @return mixed
+     * @throws \VGirol\JsonApiStructure\Exception\DotPathException
+     */
     protected function getRule(string $path)
     {
         return $this->version->getRule($path);
     }
 
-    protected function throw(string $message, $code)
+    /**
+     * Undocumented function
+     *
+     * @param string $message
+     * @param int    $code
+     *
+     * @return void
+     * @throws \VGirol\JsonApiStructure\Exception\ValidationException
+     */
+    protected function throw(string $message, int $code)
     {
         throw new ValidationException($message, $code);
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param integer $argument
+     * @param string  $type
+     * @param mixed  $value
+     *
+     * @return void
+     */
     protected function isValidArgument(int $argument, string $type, $value): void
     {
         switch ($type) {
@@ -300,6 +383,11 @@ class ValidateService
         }
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     protected function dataIsRequired(): bool
     {
         return (
@@ -310,19 +398,34 @@ class ValidateService
             );
     }
 
+    /**
+     * Undocumented function
+     *
+     * @return boolean
+     */
     protected function isAutomatic(): bool
     {
         return (($this->flags === null) || ($this->flags === 0));
     }
 
+    /**
+     * Undocumented function
+     *
+     * @param string $class
+     * @param array  $consructorArgs
+     * @param mixed  $inspected
+     * @param string $description
+     * @param int    $code
+     *
+     * @return void
+     */
     private function constraint(
         string $class,
         array $consructorArgs,
         $inspected,
         string $description,
-        bool $returnResult,
-        $code
-    ): bool {
-        return (new $class(...$consructorArgs))->evaluate($inspected, $description, $returnResult, $code);
+        int $code
+    ): void {
+        (new $class(...$consructorArgs))->evaluate($inspected, $description, $code);
     }
 }

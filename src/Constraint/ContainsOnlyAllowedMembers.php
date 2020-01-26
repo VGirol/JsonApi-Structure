@@ -6,9 +6,14 @@ namespace VGirol\JsonApiStructure\Constraint;
 
 use VGirol\JsonApiStructure\Messages;
 
+/**
+ * Constraint that checks if a json object contains only elements among a list of expected elements.
+ */
 class ContainsOnlyAllowedMembers extends Constraint
 {
     /**
+     * Undocumented variable
+
      * @var array
      */
     private $members;
@@ -38,7 +43,7 @@ class ContainsOnlyAllowedMembers extends Constraint
      *
      * @return boolean
      */
-    protected function handle($json): bool
+    public function handle($json): bool
     {
         if (!\is_array($json)) {
             return false;

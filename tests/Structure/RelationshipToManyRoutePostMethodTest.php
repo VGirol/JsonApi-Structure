@@ -103,7 +103,7 @@ class RelationshipToManyRoutePostMethodTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ]
         ];

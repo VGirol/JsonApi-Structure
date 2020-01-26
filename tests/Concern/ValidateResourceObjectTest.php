@@ -35,12 +35,12 @@ class ValidateResourceObjectTest extends TestCase
         return [
             Members::TYPE => [
                 Members::TYPE,
-                Messages::FIELDS_NAME_NOT_ALLOWED,
+                Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED,
                 403
             ],
             Members::ID => [
                 Members::ID,
-                Messages::FIELDS_NAME_NOT_ALLOWED,
+                Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED,
                 403
             ]
         ];
@@ -136,7 +136,7 @@ class ValidateResourceObjectTest extends TestCase
         return [
             'not an array' => [
                 'failed',
-                Messages::RESOURCE_IS_NOT_ARRAY,
+                Messages::RESOURCE_OBJECT_MUST_BE_ARRAY,
                 403
             ],
             'id is missing' => [
@@ -238,7 +238,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::ID => '',
                     Members::TYPE => 'test'
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_EMPTY,
+                Messages::RESOURCE_ID_MEMBER_CAN_NOT_BE_EMPTY,
                 403
             ],
             'id is not a string' => [
@@ -246,7 +246,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::ID => 1,
                     Members::TYPE => 'test'
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ]
         ];
@@ -286,7 +286,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => ''
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY,
+                Messages::RESOURCE_TYPE_MEMBER_CAN_NOT_BE_EMPTY,
                 403
             ],
             'type is not a string' => [
@@ -295,7 +295,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 404
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_TYPE_MEMBER_MUST_BE_STRING,
                 403
             ],
             'type value has forbidden characters' => [
@@ -304,7 +304,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 'test+1'
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'type value has not safe characters' => [
@@ -313,7 +313,7 @@ class ValidateResourceObjectTest extends TestCase
                     Members::TYPE => 'test 1'
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ]
         ];
@@ -373,7 +373,7 @@ class ValidateResourceObjectTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::FIELDS_HAVE_SAME_NAME,
+                Messages::RESOURCE_FIELDS_CAN_NOT_HAVE_SAME_NAME,
                 403
             ],
             'attribute named type or id' => [
@@ -385,7 +385,7 @@ class ValidateResourceObjectTest extends TestCase
                         Members::ID => 'not valid'
                     ]
                 ],
-                Messages::FIELDS_NAME_NOT_ALLOWED,
+                Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED,
                 403
             ],
             'relationship named type or id' => [
@@ -404,7 +404,7 @@ class ValidateResourceObjectTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::FIELDS_NAME_NOT_ALLOWED,
+                Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED,
                 403
             ]
         ];
@@ -462,7 +462,7 @@ class ValidateResourceObjectTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_IS_NOT_ARRAY,
+                Messages::RESOURCE_OBJECT_MUST_BE_ARRAY,
                 403
             ],
             'id is not valid' => [
@@ -474,7 +474,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ],
             'type is not valid' => [
@@ -486,7 +486,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_TYPE_MEMBER_MUST_BE_STRING,
                 403
             ],
             'missing mandatory member' => [
@@ -524,7 +524,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'fields not valid (attribute and relationship with the same name)' => [
@@ -544,7 +544,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::FIELDS_HAVE_SAME_NAME,
+                Messages::RESOURCE_FIELDS_CAN_NOT_HAVE_SAME_NAME,
                 403
             ],
             'fields not valid (attribute named "type" or "id")' => [
@@ -557,7 +557,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::FIELDS_NAME_NOT_ALLOWED,
+                Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED,
                 403
             ],
             'relationship not valid' => [
@@ -593,7 +593,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'links not valid' => [
@@ -663,7 +663,7 @@ class ValidateResourceObjectTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_COLLECTION_NOT_ARRAY,
+                Messages::RESOURCE_OBJECT_COLLECTION_MUST_BE_ARRAY,
                 403
             ],
             'not an array of objects' => [
@@ -689,7 +689,7 @@ class ValidateResourceObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ]
         ];

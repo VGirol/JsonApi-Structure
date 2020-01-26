@@ -15,7 +15,7 @@ trait ValidateMetaObject
      * Assert that a json fragment is a valid meta object.
      *
      * It will do the following checks :
-     * 1) validates that the meta object is not an array of objects (@see isNotArrayOfObjects).
+     * 1) validates that the meta object is not an array of objects (@see mustNotBeArrayOfObjects).
      * 2) validates that each member of the meta object is valid (@see validateMemberName).
      *
      * @param array   $json
@@ -26,7 +26,7 @@ trait ValidateMetaObject
      */
     public function validateMetaObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects($json, false, Messages::META_OBJECT_IS_NOT_ARRAY, 403);
+        $this->mustNotBeArrayOfObjects($json, Messages::META_OBJECT_MUST_BE_ARRAY, 403);
 
         foreach (array_keys($json) as $key) {
             $this->validateMemberName($key, $strict);

@@ -16,7 +16,7 @@ trait ValidateErrorsObject
      * Asserts that a json fragment is a valid errors object.
      *
      * It will do the following checks :
-     * 1) asserts that the errors object is an array of objects (@see isArrayOfObjects).
+     * 1) asserts that the errors object is an array of objects (@see mustBeArrayOfObjects).
      * 2) asserts that each error object of the collection is valid (@see validateErrorObject).
      *
      * @param array   $json
@@ -27,7 +27,7 @@ trait ValidateErrorsObject
      */
     public function validateErrorsObject($json, bool $strict): void
     {
-        $this->isArrayOfObjects($json, false, Messages::ERRORS_OBJECT_NOT_ARRAY, 400);
+        $this->mustBeArrayOfObjects($json, Messages::ERRORS_OBJECT_MUST_BE_ARRAY, 400);
 
         foreach ($json as $error) {
             $this->validateErrorObject($error, $strict);
@@ -60,20 +60,20 @@ trait ValidateErrorsObject
     public function validateErrorObject($json, bool $strict): void
     {
         if (!\is_array($json)) {
-            $this->throw(Messages::ERROR_OBJECT_NOT_ARRAY, 400);
+            $this->throw(Messages::ERROR_OBJECT_MUST_BE_ARRAY, 400);
         }
 
         if (\count($json) == 0) {
-            $this->throw(Messages::ERROR_OBJECT_NOT_EMPTY, 400);
+            $this->throw(Messages::ERROR_OBJECT_MUST_NOT_BE_EMPTY, 400);
         }
 
         $this->containsOnlyAllowedMembers($this->getRule('ErrorObject.Allowed'), $json);
 
         $checks = [
-            Members::ERROR_STATUS => Messages::ERROR_STATUS_IS_NOT_STRING,
-            Members::ERROR_CODE => Messages::ERROR_CODE_IS_NOT_STRING,
-            Members::ERROR_TITLE => Messages::ERROR_TITLE_IS_NOT_STRING,
-            Members::ERROR_DETAILS => Messages::ERROR_DETAILS_IS_NOT_STRING
+            Members::ERROR_STATUS => Messages::ERROR_OBJECT_STATUS_MEMBER_MUST_BE_STRING,
+            Members::ERROR_CODE => Messages::ERROR_OBJECT_CODE_MEMBER_MUST_BE_STRING,
+            Members::ERROR_TITLE => Messages::ERROR_OBJECT_TITLE_MEMBER_MUST_BE_STRING,
+            Members::ERROR_DETAILS => Messages::ERROR_OBJECT_DETAILS_MEMBER_MUST_BE_STRING
         ];
 
         foreach ($checks as $member => $failureMsg) {
@@ -127,7 +127,7 @@ trait ValidateErrorsObject
     public function validateErrorSourceObject($json): void
     {
         if (!\is_array($json)) {
-            $this->throw(Messages::ERROR_SOURCE_OBJECT_NOT_ARRAY, 400);
+            $this->throw(Messages::ERROR_OBJECT_SOURCE_OBJECT_MUST_BE_ARRAY, 400);
         }
 
         if (\array_key_exists(Members::ERROR_POINTER, $json)) {

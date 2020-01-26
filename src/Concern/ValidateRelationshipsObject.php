@@ -16,7 +16,7 @@ trait ValidateRelationshipsObject
      * Asserts that a json fragment is a valid relationships object.
      *
      * It will do the following checks :
-     * 1) asserts that the relationships object is not an array of objects (@see aisNotArrayOfObjects).
+     * 1) asserts that the relationships object is not an array of objects (@see mustNotBeArrayOfObjects).
      * 2) asserts that each relationship of the collection has a valid name (@see validateMemberName)
      * and is a valid relationship object (@see validateRelationshipObject).
      *
@@ -28,7 +28,7 @@ trait ValidateRelationshipsObject
      */
     public function validateRelationshipsObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects($json);
+        $this->mustNotBeArrayOfObjects($json);
 
         foreach ($json as $key => $relationship) {
             $this->validateMemberName($key, $strict);

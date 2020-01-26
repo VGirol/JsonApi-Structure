@@ -160,7 +160,7 @@ class ValidateAttributesObjectTest extends TestCase
                     'key+' => 'value'
                 ],
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'key is not safe' => [
@@ -168,7 +168,7 @@ class ValidateAttributesObjectTest extends TestCase
                     'not safe' => 'value'
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'field has forbidden member' => [
@@ -192,7 +192,7 @@ class ValidateAttributesObjectTest extends TestCase
                     ]
                 ],
                 false,
-                Messages::ATTRIBUTES_OBJECT_IS_NOT_ARRAY,
+                Messages::ATTRIBUTES_OBJECT_MUST_BE_ARRAY,
                 403
             ]
         ];

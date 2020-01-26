@@ -20,7 +20,7 @@ class ContainsOnlyAllowedMembersTest extends TestCase
         $json = [
             'anything' => 'ok'
         ];
-        $this->assertTrue($constraint->evaluate($json, '', true));
+        $this->assertTrue($constraint->handle($json));
     }
 
     /**
@@ -33,7 +33,7 @@ class ContainsOnlyAllowedMembersTest extends TestCase
 
         $constraint = new ContainsOnlyAllowedMembers($allowed);
 
-        $this->assertFalse($constraint->evaluate($json, '', true));
+        $this->assertFalse($constraint->handle($json));
     }
 
     public function assertContainsOnlyAllowedMembersFailedProvider()
