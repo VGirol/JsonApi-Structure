@@ -67,7 +67,7 @@ final class InvalidArgumentHelper
             '/' . \preg_quote(InvalidArgumentException::MESSAGE) . '/',
             $argument,
             ($value !== null) ?
-                ' \(' . \gettype($value) . '#' . \preg_quote(\var_export($value, true)) . '\)' : '[\s\S]*',
+                \preg_quote(' (' . \gettype($value) . '#' . \var_export($value, true) . ')') : '[\s\S]*',
             '.*',
             '.*',
             \preg_quote($type)

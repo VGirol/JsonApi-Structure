@@ -63,7 +63,7 @@ trait ValidateLinksObject
         }
 
         if (!\is_array($json)) {
-            $this->throw(Messages::LINK_OBJECT_IS_NOT_ARRAY, 403);
+            $this->throw(Messages::LINK_OBJECT_BAD_TYPE, 403);
         }
 
         if (!\array_key_exists(Members::LINK_HREF, $json)) {
@@ -88,6 +88,6 @@ trait ValidateLinksObject
     {
         return \array_key_exists(Members::DATA, $json)
                 && \is_array($json[Members::DATA])
-                && $this->isArrayOfObjects($json[Members::DATA], true);
+                && $this->isArrayOfObjects($json[Members::DATA]);
     }
 }

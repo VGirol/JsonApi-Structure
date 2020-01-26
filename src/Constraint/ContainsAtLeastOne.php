@@ -6,9 +6,14 @@ namespace VGirol\JsonApiStructure\Constraint;
 
 use VGirol\JsonApiStructure\Messages;
 
+/**
+ * Constraint that checks if a json object contains at least one element among a list of expected elements.
+ */
 class ContainsAtLeastOne extends Constraint
 {
     /**
+     * Undocumented variable
+     *
      * @var array
      */
     private $members;
@@ -38,7 +43,7 @@ class ContainsAtLeastOne extends Constraint
      *
      * @return boolean
      */
-    protected function handle($inspected): bool
+    public function handle($inspected): bool
     {
         if (!\is_array($inspected)) {
             return false;

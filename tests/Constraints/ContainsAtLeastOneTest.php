@@ -21,7 +21,7 @@ class ContainsAtLeastOneTest extends TestCase
             'anything' => 'ok',
             'another' => 'ok'
         ];
-        $this->assertTrue($constraint->evaluate($json, '', true));
+        $this->assertTrue($constraint->handle($json));
     }
 
     /**
@@ -34,7 +34,7 @@ class ContainsAtLeastOneTest extends TestCase
 
         $constraint = new ContainsAtLeastOne($allowed);
 
-        $this->assertFalse($constraint->evaluate($json, '', true));
+        $this->assertFalse($constraint->handle($json));
     }
 
     public function assertContainsAtLeastOneFailedProvider()

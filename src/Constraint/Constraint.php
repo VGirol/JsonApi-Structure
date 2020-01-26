@@ -6,6 +6,9 @@ namespace VGirol\JsonApiStructure\Constraint;
 
 use VGirol\JsonApiStructure\Exception\ValidationException;
 
+/**
+ * Abstract class for constraint
+ */
 abstract class Constraint
 {
     /**
@@ -36,29 +39,20 @@ abstract class Constraint
     /**
      * Evaluates the constraint for parameter $other
      *
-     * If $returnResult is set to false (the default), an exception is thrown
-     * in case of a failure. true is returned otherwise.
+     * @param mixed      $inspected
+     * @param string     $description
+     * @param string|int $code
      *
-     * If $returnResult is true, the result of the evaluation is returned as
-     * a boolean value instead: true in case of success, false in case of a
-     * failure.
-     *
-     * @return bool
+     * @return void
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    public function evaluate($inspected, string $description = '', bool $returnResult = false, $code = 403): bool
+    public function evaluate($inspected, string $description = '', $code = 403): void
     {
         $success = $this->handle($inspected);
-
-        if ($returnResult) {
-            return $success;
-        }
 
         if (!$success) {
             $this->fail($description, $code);
         }
-
-        return true;
     }
 
     /**
@@ -68,7 +62,7 @@ abstract class Constraint
      *
      * @return boolean
      */
-    abstract protected function handle($inspected): bool;
+    abstract public function handle($inspected): bool;
 
     /**
      * Undocumented function
@@ -89,6 +83,7 @@ abstract class Constraint
      * @param mixed  $code
      *
      * @return void
+     * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
     private function fail(string $description, $code)
     {

@@ -17,7 +17,7 @@ trait ValidateResourceObject
      *
      * It will do the following checks :
      * 1) asserts that the provided resource collection is either an empty array or an array of objects
-     * (@see isArrayOfObjects).
+     * (@see mustBeArrayOfObjects).
      * 2) asserts that the collection of resources is valid (@see validateResourceObject).
      *
      * @param array|null $json
@@ -33,14 +33,14 @@ trait ValidateResourceObject
         }
 
         if (!\is_array($json)) {
-            $this->throw(Messages::RESOURCE_COLLECTION_NOT_ARRAY, 403);
+            $this->throw(Messages::RESOURCE_OBJECT_COLLECTION_MUST_BE_ARRAY, 403);
         }
 
         if (\count($json) == 0) {
             return;
         }
 
-        $this->isArrayOfObjects($json);
+        $this->mustBeArrayOfObjects($json);
 
         foreach ($json as $resource) {
             $this->validateResourceObject($resource, $strict);
@@ -112,7 +112,7 @@ trait ValidateResourceObject
     public function validateResourceObjectTopLevelStructure($resource, $strict): void
     {
         if (!\is_array($resource)) {
-            $this->throw(Messages::RESOURCE_IS_NOT_ARRAY, 403);
+            $this->throw(Messages::RESOURCE_OBJECT_MUST_BE_ARRAY, 403);
         }
 
         $this->validateResourceIdMember($resource);
@@ -146,11 +146,11 @@ trait ValidateResourceObject
         }
 
         if (!\is_string($resource[Members::ID])) {
-            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING, 403);
+            $this->throw(Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING, 403);
         }
 
         if ($resource[Members::ID] == '') {
-            $this->throw(Messages::RESOURCE_ID_MEMBER_IS_EMPTY, 403);
+            $this->throw(Messages::RESOURCE_ID_MEMBER_CAN_NOT_BE_EMPTY, 403);
         }
     }
 
@@ -175,11 +175,11 @@ trait ValidateResourceObject
         }
 
         if (!\is_string($resource[Members::TYPE])) {
-            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING, 403);
+            $this->throw(Messages::RESOURCE_TYPE_MEMBER_MUST_BE_STRING, 403);
         }
 
         if ($resource[Members::TYPE] == '') {
-            $this->throw(Messages::RESOURCE_TYPE_MEMBER_IS_EMPTY, 403);
+            $this->throw(Messages::RESOURCE_TYPE_MEMBER_CAN_NOT_BE_EMPTY, 403);
         }
 
         $this->validateMemberName($resource[Members::TYPE], $strict);
@@ -218,18 +218,18 @@ trait ValidateResourceObject
     {
         if (\array_key_exists(Members::ATTRIBUTES, $resource)) {
             foreach (\array_keys($resource[Members::ATTRIBUTES]) as $name) {
-                $this->isNotForbiddenResourceFieldName((string) $name);
+                $this->isNotForbiddenResourceFieldName($name);
             }
         }
 
         if (array_key_exists(Members::RELATIONSHIPS, $resource)) {
             foreach (\array_keys($resource[Members::RELATIONSHIPS]) as $name) {
-                $this->isNotForbiddenResourceFieldName((string) $name);
+                $this->isNotForbiddenResourceFieldName($name);
 
                 if (\array_key_exists(Members::ATTRIBUTES, $resource)
                     && \array_key_exists($name, $resource[Members::ATTRIBUTES])
                 ) {
-                    $this->throw(Messages::FIELDS_HAVE_SAME_NAME, 403);
+                    $this->throw(Messages::RESOURCE_FIELDS_CAN_NOT_HAVE_SAME_NAME, 403);
                 }
             }
         }
@@ -246,7 +246,7 @@ trait ValidateResourceObject
     public function isNotForbiddenResourceFieldName(string $name): void
     {
         if (\in_array($name, $this->getRule('ResourceObject.FieldName.Forbidden'))) {
-            $this->throw(Messages::FIELDS_NAME_NOT_ALLOWED, 403);
+            $this->throw(Messages::RESOURCE_FIELDS_NAME_NOT_ALLOWED, 403);
         }
     }
 }

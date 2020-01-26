@@ -16,7 +16,7 @@ trait ValidateJsonapiObject
      * Asserts that a json fragment is a valid jsonapi object.
      *
      * It will do the following checks :
-     * 1) asserts that the jsonapi object is not an array of objects (@see isNotArrayOfObjects).
+     * 1) asserts that the jsonapi object is not an array of objects (@see mustNotBeArrayOfObjects).
      * 2) asserts that the jsonapi object contains only the following allowed members : "version" and "meta"
      * (@see containsOnlyAllowedMembers).
      *
@@ -31,7 +31,7 @@ trait ValidateJsonapiObject
      */
     public function validateJsonapiObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects($json, false, Messages::OBJECT_NOT_ARRAY, 403);
+        $this->mustNotBeArrayOfObjects($json);
 
         $this->containsOnlyAllowedMembers(
             $this->getRule('JsonapiObject.Allowed'),
@@ -40,7 +40,7 @@ trait ValidateJsonapiObject
 
         if (\array_key_exists(Members::JSONAPI_VERSION, $json)) {
             if (!\is_string($json[Members::JSONAPI_VERSION])) {
-                $this->throw(Messages::JSONAPI_VERSION_IS_NOT_STRING, 403);
+                $this->throw(Messages::JSONAPI_OBJECT_VERSION_MEMBER_MUST_BE_STRING, 403);
             }
         }
 

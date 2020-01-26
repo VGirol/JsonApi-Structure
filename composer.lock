@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1fce360f6d9d5dd3294b7a2a387f37a2",
+    "content-hash": "1d59e2d80159e75498d8442b4686847e",
     "packages": [
         {
             "name": "vgirol/jsonapi-constant",
@@ -12,10 +12,10 @@
             "dist": {
                 "type": "path",
                 "url": "../JsonApi-Constant",
-                "reference": "7832beab14cffda62879023cc1834a6646be88e2"
+                "reference": "83fbc13308a603005465828b61fe18912596f591"
             },
             "require": {
-                "php": "^7.2"
+                "php": "^7.0"
             },
             "type": "library",
             "extra": {
@@ -43,6 +43,7 @@
                 {
                     "name": "Vincent Girol",
                     "email": "vincent@girol.fr",
+                    "homepage": "https://github.com/VGirol",
                     "role": "Developer"
                 }
             ],
@@ -2725,7 +2726,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "~7.1"
+        "php": "^7.2"
     },
     "platform-dev": []
 }

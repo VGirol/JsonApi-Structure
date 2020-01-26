@@ -6,9 +6,14 @@ namespace VGirol\JsonApiStructure\Constraint;
 
 use VGirol\JsonApiStructure\Messages;
 
+/**
+ * Constraint that checks if a name is a valid member name.
+ */
 class MemberName extends Constraint
 {
     /**
+     * Undocumented variable
+     *
      * @var bool
      */
     private $strict;
@@ -48,10 +53,10 @@ class MemberName extends Constraint
      * @return bool
      * @throws \VGirol\JsonApiStructure\Exception\ValidationException
      */
-    protected function handle($name): bool
+    public function handle($name): bool
     {
         if (!\is_string($name)) {
-            $this->setFailureMessage(Messages::MEMBER_NAME_IS_NOT_STRING);
+            $this->setFailureMessage(Messages::MEMBER_NAME_MUST_BE_STRING);
 
             return false;
         }
@@ -74,7 +79,7 @@ class MemberName extends Constraint
         $safeRegex = "/[^{$globally}{$allowed}]+/u";
 
         if (\preg_match($this->strict ? $safeRegex : $regex, $name) > 0) {
-            $this->setFailureMessage(Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS);
+            $this->setFailureMessage(Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS);
 
             return false;
         }
@@ -82,7 +87,7 @@ class MemberName extends Constraint
         $regex = "/^[{$globally}{$globallyNotSafe}]{1}(?:.*[{$globally}{$globallyNotSafe}]{1})?$/u";
         $safeRegex = "/^[{$globally}]{1}(?:.*[{$globally}]{1})?$/u";
         if (\preg_match($this->strict ? $safeRegex : $regex, $name) == 0) {
-            $this->setFailureMessage(Messages::MEMBER_NAME_START_AND_END_WITH_ALLOWED_CHARACTERS);
+            $this->setFailureMessage(Messages::MEMBER_NAME_MUST_START_AND_END_WITH_ALLOWED_CHARACTERS);
 
             return false;
         }

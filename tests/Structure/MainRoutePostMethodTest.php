@@ -112,7 +112,7 @@ class MainRoutePostMethodTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_TYPE_MEMBER_MUST_BE_STRING,
                 403
             ],
             'data is a not a valid resource object (client-generated ID)' => [
@@ -125,7 +125,7 @@ class MainRoutePostMethodTest extends TestCase
                         ]
                     ]
                 ],
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ],
             'data is a not a valid resource object (relationship without data)' => [

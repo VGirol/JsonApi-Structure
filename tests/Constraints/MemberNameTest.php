@@ -16,7 +16,7 @@ class MemberNameTest extends TestCase
     {
         $constraint = new MemberName($strict);
 
-        $this->assertTrue($constraint->evaluate($json, '', true));
+        $this->assertTrue($constraint->handle($json));
     }
 
     public function validMemberNameProvider()
@@ -47,7 +47,7 @@ class MemberNameTest extends TestCase
         $constraint = new MemberName($strict);
 
         $this->setFailure($failureMessage, $code);
-        $constraint->evaluate($json, '', false);
+        $constraint->evaluate($json);
     }
 
     public function notValidMemberNameProvider()
@@ -56,7 +56,7 @@ class MemberNameTest extends TestCase
             'not a string' => [
                 123,
                 false,
-                Messages::MEMBER_NAME_IS_NOT_STRING,
+                Messages::MEMBER_NAME_MUST_BE_STRING,
                 403
             ],
             'too short' => [
@@ -68,25 +68,25 @@ class MemberNameTest extends TestCase
             'strict mode' => [
                 'not valid',
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'reserved characters' => [
                 'az-F%3_t',
                 false,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ],
             'start with not globally allowed character' => [
                 '_az',
                 false,
-                Messages::MEMBER_NAME_START_AND_END_WITH_ALLOWED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_START_AND_END_WITH_ALLOWED_CHARACTERS,
                 403
             ],
             'end with not globally allowed character' => [
                 'az_',
                 false,
-                Messages::MEMBER_NAME_START_AND_END_WITH_ALLOWED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_START_AND_END_WITH_ALLOWED_CHARACTERS,
                 403
             ]
         ];

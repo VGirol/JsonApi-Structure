@@ -69,7 +69,7 @@ class ValidateResourceLinkageTest extends TestCase
             'not an array' => [
                 'not valid',
                 false,
-                Messages::RESOURCE_LINKAGE_NOT_ARRAY,
+                Messages::RESOURCE_LINKAGE_BAD_TYPE,
                 403
             ],
             'not valid single resource identifier object' => [
@@ -100,14 +100,16 @@ class ValidateResourceLinkageTest extends TestCase
             ],
             'not safe member name' => [
                 [
-                    Members::TYPE => 'people',
-                    Members::ID => '9',
-                    Members::META => [
-                        'not valid' => 'due to the blank character'
+                    [
+                        Members::TYPE => 'people',
+                        Members::ID => '9',
+                        Members::META => [
+                            'not valid' => 'due to the blank character'
+                        ]
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ]
         ];
@@ -147,7 +149,7 @@ class ValidateResourceLinkageTest extends TestCase
             'not an array' => [
                 'failed',
                 false,
-                Messages::RESOURCE_IDENTIFIER_IS_NOT_ARRAY,
+                Messages::RESOURCE_IDENTIFIER_MUST_BE_ARRAY,
                 403
             ],
             'id is missing' => [
@@ -164,7 +166,7 @@ class ValidateResourceLinkageTest extends TestCase
                     Members::TYPE => 'test'
                 ],
                 false,
-                Messages::RESOURCE_ID_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_ID_MEMBER_MUST_BE_STRING,
                 403
             ],
             'type is missing' => [
@@ -181,7 +183,7 @@ class ValidateResourceLinkageTest extends TestCase
                     Members::TYPE => 404
                 ],
                 false,
-                Messages::RESOURCE_TYPE_MEMBER_IS_NOT_STRING,
+                Messages::RESOURCE_TYPE_MEMBER_MUST_BE_STRING,
                 403
             ],
             'member not allowed' => [
@@ -203,7 +205,7 @@ class ValidateResourceLinkageTest extends TestCase
                     ]
                 ],
                 true,
-                Messages::MEMBER_NAME_HAVE_RESERVED_CHARACTERS,
+                Messages::MEMBER_NAME_MUST_NOT_HAVE_RESERVED_CHARACTERS,
                 403
             ]
         ];

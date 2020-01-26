@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure\Concern;
 
-use VGirol\JsonApiConstant\Members;
 use VGirol\JsonApiStructure\Messages;
 
 /**
@@ -16,7 +15,7 @@ trait ValidateAttributesObject
      * Asserts that a json fragment is a valid attributes object.
      *
      * It will do the following checks :
-     * 1) asserts that attributes object is not an array of objects (@see isNotArrayOfObjects).
+     * 1) asserts that attributes object is not an array of objects (@see mustNotBeArrayOfObjects).
      * 2) asserts that attributes object has no member with forbidden name (@see fieldHasNoForbiddenMemberName).
      * 3) asserts that each member name of the attributes object is valid (@see validateMemberName).
      *
@@ -28,7 +27,7 @@ trait ValidateAttributesObject
      */
     public function validateAttributesObject($json, bool $strict): void
     {
-        $this->isNotArrayOfObjects($json, false, Messages::ATTRIBUTES_OBJECT_IS_NOT_ARRAY, 403);
+        $this->mustNotBeArrayOfObjects($json, Messages::ATTRIBUTES_OBJECT_MUST_BE_ARRAY, 403);
 
         $this->fieldHasNoForbiddenMemberName($json);
 

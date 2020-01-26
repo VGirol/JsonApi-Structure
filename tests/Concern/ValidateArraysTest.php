@@ -52,18 +52,32 @@ class ValidateArraysTest extends TestCase
 
     /**
      * @test
-     * @dataProvider isArrayOfObjectsFailedProvider
      */
-    public function isArrayOfObjectsFailed($data, $message, $failureMessage, $code)
+    public function isArrayOfObjectsFailed()
     {
-        $this->setFailure($failureMessage, $code);
-        (new ValidateService())->isArrayOfObjects($data, false, $message, $code);
+        $json = [
+            'key1' => 'value1',
+            'key2' => 'value2'
+        ];
+        $result = (new ValidateService())->isArrayOfObjects($json);
+
+        PHPUnit::assertFalse($result);
     }
 
-    public function isArrayOfObjectsFailedProvider()
+    /**
+     * @test
+     * @dataProvider mustBeArrayOfObjectsFailedProvider
+     */
+    public function mustBeArrayOfObjectsFailed($data, $message, $failureMessage, $code)
+    {
+        $this->setFailure($failureMessage, $code);
+        (new ValidateService())->mustBeArrayOfObjects($data, $message, $code);
+    }
+
+    public function mustBeArrayOfObjectsFailedProvider()
     {
         return [
-            'associative array' => [
+            'default message' => [
                 [
                     'key1' => 'value1',
                     'key2' => 'value2'
@@ -134,11 +148,50 @@ class ValidateArraysTest extends TestCase
                 'key2' => 'value2'
             ]
         ];
-        $failureMessage = Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS;
-        $code = 403;
+        $result = (new ValidateService())->isNotArrayOfObjects($data);
 
+        PHPUnit::assertFalse($result);
+    }
+
+    /**
+     * @test
+     * @dataProvider mustNotBeArrayOfObjectsFailedProvider
+     */
+    public function mustNotBeArrayOfObjectsFailed($data, $message, $failureMessage, $code)
+    {
         $this->setFailure($failureMessage, $code);
+        (new ValidateService())->mustNotBeArrayOfObjects($data, $message, $code);
+    }
 
-        (new ValidateService())->isNotArrayOfObjects($data);
+    public function mustNotBeArrayOfObjectsFailedProvider()
+    {
+        return [
+            'default message' => [
+                [
+                    [
+                        'key1' => 'value1'
+                    ],
+                    [
+                        'key2' => 'value2'
+                    ]
+                ],
+                '',
+                Messages::MUST_NOT_BE_ARRAY_OF_OBJECTS,
+                403
+            ],
+            'customized message' => [
+                [
+                    [
+                        'key1' => 'value1'
+                    ],
+                    [
+                        'key2' => 'value2'
+                    ]
+                ],
+                'customized message',
+                'customized message',
+                403
+            ]
+        ];
     }
 }

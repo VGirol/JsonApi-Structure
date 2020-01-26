@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace VGirol\JsonApiStructure\Concern;
 
 use VGirol\JsonApiConstant\Members;
+use VGirol\JsonApiStructure\Constraint\ContainsAtLeastOne;
 use VGirol\JsonApiStructure\Messages;
 
 /**
@@ -85,13 +86,12 @@ trait ValidateStructure
         $this->containsAtLeastOneMember(
             $expected,
             $json,
-            \sprintf(Messages::TOP_LEVEL_MEMBERS, implode('", "', $expected)),
-            false,
+            \sprintf(Messages::DOCUMENT_TOP_LEVEL_MEMBERS, implode('", "', $expected)),
             403
         );
 
         if (\array_key_exists(Members::DATA, $json) && \array_key_exists(Members::ERRORS, $json)) {
-            $this->throw(Messages::TOP_LEVEL_DATA_AND_ERROR, 403);
+            $this->throw(Messages::DOCUMENT_DOCUMENT_TOP_LEVEL_MEMBERS_DATA_AND_ERROR, 403);
         }
 
         $allowed = $this->getRule('Document.Allowed');
@@ -99,7 +99,7 @@ trait ValidateStructure
 
         if (!\array_key_exists(Members::DATA, $json)) {
             if (\array_key_exists(Members::INCLUDED, $json)) {
-                $this->throw(Messages::TOP_LEVEL_DATA_AND_INCLUDED, 403);
+                $this->throw(Messages::DOCUMENT_DOCUMENT_TOP_LEVEL_MEMBERS_DATA_AND_INCLUDED, 403);
             }
             if (!$this->isAutomatic() && $this->dataIsRequired()) {
                 $this->throw(Messages::REQUEST_ERROR_NO_DATA_MEMBER, 403);
@@ -146,7 +146,7 @@ trait ValidateStructure
             return;
         }
 
-        if ($this->isArrayOfObjects($json, true)) {
+        if ($this->isArrayOfObjects($json)) {
             if (!$this->isAutomatic() && $this->isSingle()) {
                 $this->throw(Messages::REQUEST_ERROR_DATA_MEMBER_NOT_SINGLE, 403);
             }
@@ -225,7 +225,7 @@ trait ValidateStructure
                 $present[$inc[Members::TYPE]] = [];
             }
             if (\in_array($inc[Members::ID], $present[$inc[Members::TYPE]])) {
-                $this->throw(Messages::COMPOUND_DOCUMENT_ONLY_ONE_RESOURCE, 403);
+                $this->throw(Messages::DOCUMENT_NO_DUPLICATE_RESOURCE, 403);
             }
 
             \array_push($present[$inc[Members::TYPE]], $inc[Members::ID]);
@@ -300,7 +300,9 @@ trait ValidateStructure
             Members::LINKS
         ];
 
-        return $this->containsAtLeastOneMember($expected, $resource, '', true);
+        $constraint = new ContainsAtLeastOne($expected);
+
+        return $constraint->handle($resource);
     }
 
     /**
@@ -316,7 +318,7 @@ trait ValidateStructure
         if (\count($data) == 0) {
             return $arr;
         }
-        if (!$this->isArrayOfObjects($data, true)) {
+        if (!$this->isArrayOfObjects($data)) {
             $data = [$data];
         }
         foreach ($data as $obj) {
@@ -329,7 +331,7 @@ trait ValidateStructure
                 }
                 $arr = \array_merge(
                     $arr,
-                    $this->isArrayOfObjects($relationship[Members::DATA], true) ?
+                    $this->isArrayOfObjects($relationship[Members::DATA]) ?
                         $relationship[Members::DATA] : [$relationship[Members::DATA]]
                 );
             }

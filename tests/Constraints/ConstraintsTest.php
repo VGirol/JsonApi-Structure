@@ -7,35 +7,35 @@ use VGirol\JsonApiStructure\Tests\TestCase;
 
 class ConstraintsTest extends TestCase
 {
-    /**
-     * @test
-     */
-    public function evaluateReturnsValue()
-    {
-        $mock = $this->getMockForAbstractClass(Constraint::class);
-        $mock->expects($this->any())
-             ->method('handle')
-             ->will($this->returnValue(false));
+    // /**
+    //  * @test
+    //  */
+    // public function evaluateReturnsValue()
+    // {
+    //     $mock = $this->getMockForAbstractClass(Constraint::class);
+    //     $mock->expects($this->any())
+    //          ->method('handle')
+    //          ->will($this->returnValue(false));
 
-        $result = $mock->evaluate('test', 'description', true);
+    //     $result = $mock->evaluate('test', 'description', true);
 
-        $this->assertFalse($result);
-    }
+    //     $this->assertFalse($result);
+    // }
 
-    /**
-     * @test
-     */
-    public function evaluateReturnsValueWhileNotAsked()
-    {
-        $mock = $this->getMockForAbstractClass(Constraint::class);
-        $mock->expects($this->any())
-             ->method('handle')
-             ->will($this->returnValue(true));
+    // /**
+    //  * @test
+    //  */
+    // public function evaluateReturnsValueWhileNotAsked()
+    // {
+    //     $mock = $this->getMockForAbstractClass(Constraint::class);
+    //     $mock->expects($this->any())
+    //          ->method('handle')
+    //          ->will($this->returnValue(true));
 
-        $result = $mock->evaluate('test', 'description', false);
+    //     $result = $mock->evaluate('test', 'description', false);
 
-        $this->assertTrue($result);
-    }
+    //     $this->assertTrue($result);
+    // }
 
     /**
      * @test
@@ -48,7 +48,7 @@ class ConstraintsTest extends TestCase
                 return 'toString() message.';
             }
 
-            protected function handle($inspected): bool
+            public function handle($inspected): bool
             {
                 return false;
             }
@@ -56,7 +56,7 @@ class ConstraintsTest extends TestCase
 
         $this->setFailure("toString() message.", 403);
 
-        $obj->evaluate('test', '', false);
+        $obj->evaluate('test', '');
     }
 
     /**
@@ -70,7 +70,7 @@ class ConstraintsTest extends TestCase
                 return 'toString() message.';
             }
 
-            protected function handle($inspected): bool
+            public function handle($inspected): bool
             {
                 $this->setFailureMessage('Failure message.');
                 return false;
@@ -79,6 +79,6 @@ class ConstraintsTest extends TestCase
 
         $this->setFailure("toString() message.\nFailure message.\nDescription", 401);
 
-        $obj->evaluate('test', 'Description', false, 401);
+        $obj->evaluate('test', 'Description', 401);
     }
 }

@@ -33,14 +33,14 @@ trait ValidateResourceLinkage
         }
 
         if (!\is_array($json)) {
-            $this->throw(Messages::RESOURCE_LINKAGE_NOT_ARRAY, 403);
+            $this->throw(Messages::RESOURCE_LINKAGE_BAD_TYPE, 403);
         }
 
         if (\count($json) == 0) {
             return;
         }
 
-        if (!$this->isArrayOfObjects($json, true)) {
+        if (!$this->isArrayOfObjects($json)) {
             $json = [$json];
         }
         foreach ($json as $resource) {
@@ -69,7 +69,7 @@ trait ValidateResourceLinkage
     public function validateResourceIdentifierObject($resource, bool $strict): void
     {
         if (!\is_array($resource)) {
-            $this->throw(Messages::RESOURCE_IDENTIFIER_IS_NOT_ARRAY, 403);
+            $this->throw(Messages::RESOURCE_IDENTIFIER_MUST_BE_ARRAY, 403);
         }
 
         $this->validateResourceIdMember($resource);

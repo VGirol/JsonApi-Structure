@@ -15,9 +15,22 @@
     },
     "mutators": {
         "@default": true,
+        "DecrementInteger": {
+            "ignore": [
+                "VGirol\\JsonApiStructure\\Exception\\InvalidArgumentHelper::message"
+            ]
+        },
+        "IncrementInteger": {
+            "ignore": [
+                "VGirol\\JsonApiStructure\\Exception\\InvalidArgumentHelper::message"
+            ]
+        },
         "ProtectedVisibility": {
             "ignore": [
-                "VGirol\\JsonApiStructure\\ValidateService::throw"
+                "VGirol\\JsonApiStructure\\HaveBitwiseFlag::setFlag",
+                "VGirol\\JsonApiStructure\\HaveBitwiseFlag::selectFlag",
+                "VGirol\\JsonApiStructure\\ValidateService::throw",
+                "VGirol\\JsonApiStructure\\Exception\\CanThrowInvalidArgumentException::invalidArgument"
             ]
         },
         "PublicVisibility": {

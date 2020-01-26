@@ -4,12 +4,11 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure;
 
-require_once 'Versions.php';
-
 use VGirol\JsonApiConstant\Members;
+use VGirol\JsonApiConstant\Versions;
 
 return [
-    VERSION_1_0 => [
+    Versions::VERSION_1_0 => [
         'Document' => [
             'AtLeast' => [
                 Members::DATA,
@@ -116,6 +115,6 @@ return [
             ]
         ]
     ],
-    VERSION_1_1 => [
+    Versions::VERSION_1_1 => [
     ]
 ];
