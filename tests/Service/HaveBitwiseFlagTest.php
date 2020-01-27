@@ -3,12 +3,10 @@
 namespace VGirol\JsonApiStructure\Tests\Service;
 
 use PHPUnit\Framework\Assert as PHPUnit;
-use VGirol\JsonApiStructure\CanUseDotPath;
-use VGirol\JsonApiStructure\Exception\DotPathException;
 use VGirol\JsonApiStructure\HaveBitwiseFlag;
 use VGirol\JsonApiStructure\Tests\TestCase;
 
-class HaveBitWiseFlagTest extends TestCase
+class HaveBitwiseFlagTest extends TestCase
 {
     /**
      * @test
