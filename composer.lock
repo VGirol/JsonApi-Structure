@@ -12,7 +12,7 @@
             "dist": {
                 "type": "path",
                 "url": "../JsonApi-Constant",
-                "reference": "83fbc13308a603005465828b61fe18912596f591"
+                "reference": "1f0d9fa59f40ed74c91e51245a934fcb8e99e4b2"
             },
             "require": {
                 "php": "^7.0"
