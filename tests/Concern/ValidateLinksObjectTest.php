@@ -48,7 +48,7 @@ class ValidateLinksObjectTest extends TestCase
      */
     public function linkObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService)->validateLinkObject($json, $strict);
     }
 
@@ -126,7 +126,7 @@ class ValidateLinksObjectTest extends TestCase
      */
     public function linksObjectIsNotValid($json, $allowed, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateLinksObject($json, $allowed, $strict);
     }
 

@@ -93,7 +93,7 @@ class ValidateStructureTest extends TestCase
      */
     public function documentHasNotValidStructure($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateStructure($json, $strict);
     }
 

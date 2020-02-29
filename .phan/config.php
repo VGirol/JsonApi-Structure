@@ -283,6 +283,7 @@ return [
         // 'PhanPluginDescriptionlessCommentOnProtectedMethod',
         // 'PhanPluginNoCommentOnPrivateMethod',
         // 'PhanPluginDescriptionlessCommentOnPrivateMethod',
+        'PhanUndeclaredMethod'
     ],
 
     // If empty, no filter against issues types will be applied.

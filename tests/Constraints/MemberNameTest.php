@@ -46,7 +46,7 @@ class MemberNameTest extends TestCase
         $failureMessage = Messages::MEMBER_NAME_NOT_VALID . "\n" . $failureMessage;
         $constraint = new MemberName($strict);
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         $constraint->evaluate($json);
     }
 

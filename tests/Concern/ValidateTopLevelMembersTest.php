@@ -46,7 +46,7 @@ class ValidateTopLevelMembersTest extends TestCase
      */
     public function documentHasNotValidTopLevelMembers($json, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateTopLevelMembers($json);
     }
 

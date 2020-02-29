@@ -30,7 +30,7 @@ class ValidateStructureTest extends TestCase
      */
     public function topLevelLinksObjectIsNotValid($json, $withPagination, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateTopLevelLinksMember($json, $withPagination, $strict);
     }
 

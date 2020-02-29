@@ -26,7 +26,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceFieldNameIsForbidden($name, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->isNotForbiddenResourceFieldName($name);
     }
 
@@ -66,7 +66,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceLinksObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceLinksObject($json, $strict);
     }
 
@@ -127,7 +127,7 @@ class ValidateResourceObjectTest extends TestCase
     public function resourceHasNotValidTopLevelStructure($json, $failureMessage, $code)
     {
         $strict = true;
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObjectTopLevelStructure($json, $strict);
     }
 
@@ -226,7 +226,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceIdMemberIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceIdMember($json);
     }
 
@@ -273,7 +273,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceTypeMemberIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceTypeMember($json, $strict);
     }
 
@@ -350,7 +350,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceFieldIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateFields($json);
     }
 
@@ -452,7 +452,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObject($json, $strict);
     }
 
@@ -653,7 +653,7 @@ class ValidateResourceObjectTest extends TestCase
      */
     public function resourceObjectCollectionIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceObjectCollection($json, $strict);
     }
 

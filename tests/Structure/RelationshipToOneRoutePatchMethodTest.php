@@ -54,7 +54,7 @@ class RelationshipToOneRoutePatchMethodTest extends TestCase
         $service = new ValidateService($method);
         $service->setRelationship(ValidateService::TO_ONE_RELATIONSHIP);
 
-        $this->setFailure($failureMsg, $code);
+        $this->setValidationFailure($failureMsg, $code);
 
         $service->validateStructure($json, $strict);
     }

@@ -18,16 +18,17 @@
     ],
     "require": {
         "php" : "^7.2",
-        "vgirol/jsonapi-constant": "dev-master"
+        "vgirol/jsonapi-constant": "^1.1"
     },
     "require-dev": {
-        "phpunit/phpunit" : "^8.0",
-        "infection/infection": "^0.14|^0.15"
+        "phpunit/phpunit": "~8.5.2|^9.0",
+        "infection/infection": "^0.14|^0.15",
+        "vgirol/phpunit-exception": "dev-master"
     },
     "repositories": [
         {
             "type": "path",
-            "url": "../JsonApi-Constant",
+            "url": "../Phpunit-Exception",
             "options": {
                 "symlink": true
             }

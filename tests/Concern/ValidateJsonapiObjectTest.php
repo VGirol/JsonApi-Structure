@@ -32,7 +32,7 @@ class ValidateJsonapiObjectTest extends TestCase
      */
     public function jsonapiObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService)->validateJsonapiObject($json, $strict);
     }
 

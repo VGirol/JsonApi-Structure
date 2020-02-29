@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace VGirol\JsonApiStructure\Exception;
 
+use VGirol\PhpunitException\Exception\InvalidArgumentHelper;
+
 /**
  * This trait provide a method to throw InvalidArgumentException.
  */
@@ -17,7 +19,7 @@ trait CanThrowInvalidArgumentException
      * @param mixed   $value
      *
      * @return void
-     * @throws \VGirol\JsonApiStructure\Exception\InvalidArgumentException
+     * @throws \VGirol\PhpunitException\Exception\InvalidArgumentException
      *
      * @SuppressWarnings(PHPMD.StaticAccess)
      */
