@@ -70,7 +70,7 @@ class ValidateArraysTest extends TestCase
      */
     public function mustBeArrayOfObjectsFailed($data, $message, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->mustBeArrayOfObjects($data, $message, $code);
     }
 
@@ -159,7 +159,7 @@ class ValidateArraysTest extends TestCase
      */
     public function mustNotBeArrayOfObjectsFailed($data, $message, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->mustNotBeArrayOfObjects($data, $message, $code);
     }
 

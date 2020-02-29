@@ -29,7 +29,7 @@ class ValidateMetaObjectTest extends TestCase
      */
     public function metaObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService)->validateMetaObject($json, $strict);
     }
 

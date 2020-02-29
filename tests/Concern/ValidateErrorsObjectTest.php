@@ -35,7 +35,7 @@ class ValidateErrorsObjectTest extends TestCase
         $failureMessage = Messages::ONLY_ALLOWED_MEMBERS;
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateErrorLinksObject($json, $strict);
     }
 
@@ -73,7 +73,7 @@ class ValidateErrorsObjectTest extends TestCase
      */
     public function errorSourceObjectIsNotValid($json, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateErrorSourceObject($json);
     }
 
@@ -146,7 +146,7 @@ class ValidateErrorsObjectTest extends TestCase
      */
     public function errorObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateErrorObject($json, $strict);
     }
 
@@ -304,7 +304,7 @@ class ValidateErrorsObjectTest extends TestCase
      */
     public function errorsObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage);
+        $this->setValidationFailure($failureMessage);
         (new ValidateService())->validateErrorsObject($json, $strict);
     }
 

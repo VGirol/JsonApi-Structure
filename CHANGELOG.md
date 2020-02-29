@@ -9,3 +9,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 
 - first release
+
+## 1.1.0 - 2020-02-29
+
+### Removed
+
+- Moved testing tools into new package (VGirol/Phpunit-Exception)

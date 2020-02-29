@@ -81,7 +81,7 @@ class ValidateIncludedTest extends TestCase
      */
     public function compoundDocumentIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateIncludedCollection($json[Members::INCLUDED], $json[Members::DATA], $strict);
     }
 

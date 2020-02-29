@@ -36,7 +36,7 @@ class ValidateAttributesObjectTest extends TestCase
      */
     public function memberNameIsForbidden($name, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->isNotForbiddenMemberName($name);
     }
 
@@ -75,7 +75,7 @@ class ValidateAttributesObjectTest extends TestCase
      */
     public function fieldHasForbiddenMemberName($json, $failureMessage)
     {
-        $this->setFailure($failureMessage, 403);
+        $this->setValidationFailure($failureMessage, 403);
         (new ValidateService())->fieldHasNoForbiddenMemberName($json);
     }
 
@@ -148,7 +148,7 @@ class ValidateAttributesObjectTest extends TestCase
      */
     public function attributesObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateAttributesObject($json, $strict);
     }
 

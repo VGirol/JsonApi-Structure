@@ -50,7 +50,7 @@ class MainRoutePatchMethodTest extends TestCase
         $service->setSingle()
                 ->setRouteType(ValidateService::ROUTE_MAIN);
 
-        $this->setFailure($failureMsg, $code);
+        $this->setValidationFailure($failureMsg, $code);
 
         $service->validateStructure($json, $strict);
     }

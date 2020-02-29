@@ -3,14 +3,15 @@
 namespace VGirol\JsonApiStructure\Tests;
 
 use PHPUnit\Framework\TestCase as BaseTestCase;
-use VGirol\JsonApiStructure\Testing\SetExceptionsTrait;
+use VGirol\JsonApiStructure\Exception\ValidationException;
+use VGirol\PhpunitException\SetExceptionsTrait;
 
 abstract class TestCase extends BaseTestCase
 {
     use SetExceptionsTrait;
 
     /**
-     * assert the success of the current test
+     * Assert the success of the current test
      *
      * @param string $message
      *
@@ -19,5 +20,10 @@ abstract class TestCase extends BaseTestCase
     public function succeed($message = '')
     {
         $this->assertTrue(true, $message);
+    }
+
+    public function setValidationFailure(?string $message = null, $code = null): void
+    {
+        $this->setFailure(ValidationException::class, $message, $code);
     }
 }

@@ -49,7 +49,7 @@ class ValidateRelationshipsObjectTest extends TestCase
      */
     public function relationshipLinksObjectIsNotValid($json, $withPagination, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipLinksObject($json, $withPagination, $strict);
     }
 
@@ -167,7 +167,7 @@ class ValidateRelationshipsObjectTest extends TestCase
      */
     public function relationshipObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipObject($json, $strict);
     }
 
@@ -281,7 +281,7 @@ class ValidateRelationshipsObjectTest extends TestCase
      */
     public function relationshipsObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateRelationshipsObject($json, $strict);
     }
 

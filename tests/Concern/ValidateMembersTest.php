@@ -70,7 +70,7 @@ class ValidateMembersTest extends TestCase
         $failureMessage = sprintf(Messages::HAS_MEMBER, 'member');
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->hasMember($expected, $json);
     }
 
@@ -141,7 +141,7 @@ class ValidateMembersTest extends TestCase
         $failureMessage = sprintf(Messages::HAS_MEMBER, 'anything');
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->hasMembers($expected, $json);
     }
 
@@ -216,7 +216,7 @@ class ValidateMembersTest extends TestCase
         $failureMessage = sprintf(Messages::HAS_ONLY_MEMBERS, implode(', ', $expected));
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->hasOnlyMembers($expected, $json);
     }
 
@@ -285,7 +285,7 @@ class ValidateMembersTest extends TestCase
         $failureMessage = sprintf(Messages::NOT_HAS_MEMBER, 'anything');
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->notHasMember($expected, $json);
     }
 
@@ -362,7 +362,7 @@ class ValidateMembersTest extends TestCase
         $failureMessage = sprintf(Messages::NOT_HAS_MEMBER, 'anything');
         $code = 403;
 
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->notHasMembers($expected, $json);
     }
 
@@ -444,7 +444,7 @@ class ValidateMembersTest extends TestCase
             'member' => 'value'
         ];
 
-        $this->setFailure(null, null);
+        $this->setValidationFailure(null, null);
         (new ValidateService())->{$fn}($json);
     }
 

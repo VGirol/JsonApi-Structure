@@ -46,7 +46,7 @@ class RelationshipToManyRouteDeleteMethodTest extends TestCase
         $service = new ValidateService($method);
         $service->setRelationship(ValidateService::TO_MANY_RELATIONSHIP);
 
-        $this->setFailure($failureMsg, $code);
+        $this->setValidationFailure($failureMsg, $code);
 
         $service->validateStructure($json, $strict);
     }

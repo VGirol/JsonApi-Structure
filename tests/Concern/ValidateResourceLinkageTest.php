@@ -59,7 +59,7 @@ class ValidateResourceLinkageTest extends TestCase
      */
     public function resourceLinkageIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceLinkage($json, $strict);
     }
 
@@ -139,7 +139,7 @@ class ValidateResourceLinkageTest extends TestCase
      */
     public function resourceIdentifierObjectIsNotValid($json, $strict, $failureMessage, $code)
     {
-        $this->setFailure($failureMessage, $code);
+        $this->setValidationFailure($failureMessage, $code);
         (new ValidateService())->validateResourceIdentifierObject($json, $strict);
     }
 

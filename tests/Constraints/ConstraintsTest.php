@@ -54,7 +54,7 @@ class ConstraintsTest extends TestCase
             }
         };
 
-        $this->setFailure("toString() message.", 403);
+        $this->setValidationFailure("toString() message.", 403);
 
         $obj->evaluate('test', '');
     }
@@ -77,7 +77,7 @@ class ConstraintsTest extends TestCase
             }
         };
 
-        $this->setFailure("toString() message.\nFailure message.\nDescription", 401);
+        $this->setValidationFailure("toString() message.\nFailure message.\nDescription", 401);
 
         $obj->evaluate('test', 'Description', 401);
     }
