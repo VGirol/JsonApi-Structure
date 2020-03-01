@@ -15,3 +15,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Removed
 
 - Moved testing tools into new package (VGirol/Phpunit-Exception)
+
+## 1.1.1 - 2020-03-01
+
+### Added
+
+- Added parameters with default value to "ValidateService::setCollection" and "ValidateService::setSingle" methods

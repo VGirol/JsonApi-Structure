@@ -183,11 +183,16 @@ class ValidateService
     /**
      * Undocumented function
      *
+     * @param bool $isCollection
+     *
      * @return static
      */
-    public function setCollection()
+    public function setCollection(bool $isCollection = true)
     {
-        return $this->selectFlag(self::RESOURCE_COLLECTION, [self::RESOURCE_COLLECTION, self::SINGLE_RESOURCE]);
+        return $this->selectFlag(
+            $isCollection ? self::RESOURCE_COLLECTION : self::SINGLE_RESOURCE,
+            [self::RESOURCE_COLLECTION, self::SINGLE_RESOURCE]
+        );
     }
 
     /**
@@ -203,11 +208,16 @@ class ValidateService
     /**
      * Undocumented function
      *
+     * @param bool $isSingle
+     *
      * @return static
      */
-    public function setSingle()
+    public function setSingle(bool $isSingle = true)
     {
-        return $this->selectFlag(self::SINGLE_RESOURCE, [self::RESOURCE_COLLECTION, self::SINGLE_RESOURCE]);
+        return $this->selectFlag(
+            $isSingle ? self::SINGLE_RESOURCE : self::RESOURCE_COLLECTION,
+            [self::RESOURCE_COLLECTION, self::SINGLE_RESOURCE]
+        );
     }
 
     /**

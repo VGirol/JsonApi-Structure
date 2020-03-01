@@ -131,7 +131,7 @@ abstract class Messages
     'The request MUST include a top-level member named "data" which value MUST be a single object.';
     public const RELATIONSHIP_NO_DATA_MEMBER =
     'If a relationship is provided in the relationships member of the resource object, ' .
-    'its value MUST be a relationship object with a data member. ';
+    'its value MUST be a relationship object with a "data" member. ';
     public const REQUEST_ERROR_DATA_MEMBER_NOT_COLLECTION =
     'The request MUST include a top-level member named "data" which value MUST be a collection of objects.';
 }
