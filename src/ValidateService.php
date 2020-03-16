@@ -57,6 +57,13 @@ class ValidateService
     protected $version;
 
     /**
+     * Activate the strict mode when checking members names.
+     *
+     * @var bool
+     */
+    protected $strict = true;
+
+    /**
      * The HTTP method of the request
      *
      * @var string
@@ -68,16 +75,32 @@ class ValidateService
      *
      * @param string|null $method  The HTTP method of the request
      * @param string|null $version The version of the JSON:API specification
+     * @param bool        $strict  If true, activate the strict mode when checking members names
      *
      * @return void
      */
-    public function __construct(string $method = null, string $version = null)
+    public function __construct(string $method = null, string $version = null, bool $strict = true)
     {
         if ($method !== null) {
             $this->setMethod($method);
         }
 
         $this->version = new VersionService($version);
+        $this->strict = true;
+    }
+
+    /**
+     * Set the strict mode
+     *
+     * @param bool $strict
+     *
+     * @return static
+     */
+    public function setStrictMode(bool $strict)
+    {
+        $this->strict = $strict;
+
+        return $this;
     }
 
     /**

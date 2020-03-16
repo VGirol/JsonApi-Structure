@@ -21,3 +21,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 
 - Added parameters with default value to "ValidateService::setCollection" and "ValidateService::setSingle" methods
+
+## 1.2.0 - 2020-03-17
+
+### Added
+
+- Added "ValidateService::setStrictMode" method
