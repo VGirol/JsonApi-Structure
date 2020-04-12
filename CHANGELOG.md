@@ -27,3 +27,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 
 - Added "ValidateService::setStrictMode" method
+
+## 1.2.1 - 2020-04-10
+
+### Added
+
+- Update branch alias
