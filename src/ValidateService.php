@@ -86,7 +86,7 @@ class ValidateService
         }
 
         $this->version = new VersionService($version);
-        $this->strict = true;
+        $this->setStrictMode($strict);
     }
 
     /**
