@@ -22,7 +22,7 @@ use VGirol\JsonApiStructure\Exception\CanThrowInvalidArgumentException;
 use VGirol\JsonApiStructure\Exception\ValidationException;
 
 /**
- * Main class to validate documents uusing the JSON:API specification
+ * Main class to validate documents using the JSON:API specification
  */
 class ValidateService
 {
