@@ -2,4 +2,8 @@
 
 cp -f install/pre-commit .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit
-echo "Copying pre-commit file"
+printf "Copying pre-commit file\n"
+
+cp -f install/pre-commit .git/hooks/pre-commit
+chmod +x .git/hooks/pre-commit
+printf "Copying pre-push file\n"
