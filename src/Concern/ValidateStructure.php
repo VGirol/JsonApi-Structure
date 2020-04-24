@@ -45,21 +45,20 @@ trait ValidateStructure
             }
         }
 
-        if (\array_key_exists(Members::META, $json)) {
-            $this->validateMetaObject($json[Members::META], $strict);
-        }
-
-        if (\array_key_exists(Members::ERRORS, $json)) {
-            $this->validateErrorsObject($json[Members::ERRORS], $strict);
-        }
-
-        if (\array_key_exists(Members::JSONAPI, $json)) {
-            $this->validateJsonapiObject($json[Members::JSONAPI], $strict);
-        }
-
         if (\array_key_exists(Members::LINKS, $json)) {
             $withPagination = $this->canBePaginated($json);
             $this->validateTopLevelLinksMember($json[Members::LINKS], $withPagination, $strict);
+        }
+
+        $tests = [
+            Members::META => 'validateMetaObject',
+            Members::ERRORS => 'validateErrorsObject',
+            Members::JSONAPI => 'validateJsonapiObject'
+        ];
+        foreach ($tests as $member => $func) {
+            if (\array_key_exists($member, $json)) {
+                \call_user_func_array([$this, $func], [$json[$member], $strict]);
+            }
         }
     }
 
