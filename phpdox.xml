@@ -5,7 +5,7 @@
 
         <collector publiconly="false" backend="parser" />
 
-        <generator output="${basedir}/docs/api">
+        <generator output="${basedir}/docs">
 
             <enrich base="${basedir}/build">
                 <source type="build" />
@@ -28,9 +28,9 @@
                 </source>
             </enrich>
 
-            <build engine="html" enabled="true" output="html">
+            <build engine="html" enabled="true" output="ref">
                 <template dir="${phpDox.home}/templates/html" />
-                <file extension="xhtml" />
+                <file extension="html" />
             </build>
 
             <!-- <build engine="xml" enabled="true" output="xml" /> -->
