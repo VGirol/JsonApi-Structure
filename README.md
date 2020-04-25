@@ -60,7 +60,7 @@ $service->validateStructure($json);
 
 ## Documentation
 
-The API documentation is available in XHTML format at the url [http://jsonapi-structure.girol.fr/docs/ref/index.html](http://jsonapi-structure.irol.fr/docs/ref/index.html).
+The API documentation is available in XHTML format at the url [http://jsonapi-structure.girol.fr/docs/ref/index.html](http://jsonapi-structure.girol.fr/docs/ref/index.html).
 
 ## Change log
 
