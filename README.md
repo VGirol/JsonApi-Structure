@@ -12,7 +12,7 @@ This package provides a set of tools to check content of a request using the [JS
 
 ## Technologies
 
-- PHP 7.2+
+- PHP 7.3+
 
 ## Installation
 
