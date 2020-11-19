@@ -33,3 +33,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 
 - Update branch alias
+
+## 1.2.2 - 2020-10-19
+
+### Added
+
+- Update phpunit and travis config
