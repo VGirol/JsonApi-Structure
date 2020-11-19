@@ -17,13 +17,13 @@
         }
     ],
     "require": {
-        "php" : "^7.2",
+        "php" : "^7.3",
         "vgirol/jsonapi-constant": "^1.1"
     },
     "require-dev": {
-        "phpunit/phpunit": "^8.0|^9.0",
+        "phpunit/phpunit": "^9.0",
         "infection/infection": "~0.14",
-        "vgirol/phpunit-exception": "^1.0|dev-master"
+        "vgirol/phpunit-exception": "dev-master"
     },
     "minimum-stability": "stable",
     "autoload": {

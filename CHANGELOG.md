@@ -34,9 +34,10 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 - Update branch alias
 
-## 1.2.2 - 2020-10-19
+## 1.3.0 - 2020-10-19
 
 ### Added
 
-- Update phpunit and travis config
+- Update Travis config
 - Remove support for php 7.2
+- Bump phpunit version
