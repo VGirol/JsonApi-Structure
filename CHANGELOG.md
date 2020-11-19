@@ -39,3 +39,4 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 
 - Update phpunit and travis config
+- Remove support for php 7.2
