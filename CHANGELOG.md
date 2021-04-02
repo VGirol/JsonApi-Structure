@@ -41,3 +41,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 - Update Travis config
 - Remove support for php 7.2
 - Bump phpunit version
+
+## 1.3.1 - 2021-04-02
+
+### Added
+
+- Change infection configuration
